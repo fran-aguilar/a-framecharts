@@ -6,7 +6,7 @@ In order to see the first examples it's necesary to execute the simplehttpserver
 python simplehttpserver.py
 ```
 
-<div align="center">
+<div align="left">
   <a href="http:localhost:8000/histogram.html">Basic Histogram using histogram component and line component.</a>
   <br />
   <a href="http:localhost:8000/histogram-animation.html">Basic Historgram with interaction on a-frame cursor click event. </a>
