@@ -3,13 +3,13 @@
 <head>
     <title>My A-Frame Scene</title>
     <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
-    <!--<script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>-->
+   <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
 
     <!--<script src="js/aframe-draw-component.js"></script>
     <script src="js/aframe-htmltexture-component.js" ></script>-->
-    <script src="https://scenevr.github.io/htmltexture-component/build.js"></script>
-    <!--<script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>-->
-<!--<script src="https://rawgit.com/mayognaise/aframe-html-shader/master/dist/aframe-html-shader.min.js"></script>-->
+    <!--<script src="https://scenevr.github.io/htmltexture-component/build.js"></script>-->
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script> 
+    <script src="https://rawgit.com/mayognaise/aframe-html-shader/master/dist/aframe-html-shader.min.js"></script>
     <script type="text/javascript">
     AFRAME.registerComponent('drag-rotate-component',{
       schema : { speed : {default:1}},
@@ -191,32 +191,30 @@
 </head>
 
 <body>
-
+    <div id="htmlTarget" class="hide">
+        <div id="emoji">〠</div>
+        <div id="target">
+            <h1>HELLO<span>★</span></h1>
+            <span id="pre">A-frame</span><a href="http://google.com">Google</a>
+<button>Submit</button>
+        </div>
+    </div>
     <a-scene  >
-        <a-assets>
-            <div id="htmlTarget"  >
-                <div id="emoji">〠</div>
-                <div id="target">
-                    <h1>HELLO<span>★</span></h1>
-                    <span id="pre">A</span>
-                </div>
-            </div>
-            <div class="tower">
-                <ul>
-                    <li>🐴</li>
-                    <li>🐮</li>
-                    <li>🐷</li>
-                    <li>🐹</li>
-                </ul>
-            </div>
-        </a-assets>
+ 
         <a-entity camera position="0 0.5 1.1" look-controls wasd-controls mouse-cursor>
   
         </a-entity>
-        <!--<a-entity id="lettersEntity" geometry="primitive:plane;width:2;height:2;" rotation="-30 -30 0" position="-0.2 1.5 2.5" material="shader:html;target:#target;transparent:false;fps:0.3;"></a-entity>-->
-        <a-entity geometry="primitive: box" scale="0.5 2 0.5" rotation="0 22 0" position="0 2 -2"  draw="width: 128; height: 512;" htmltexture="asset: .tower"></a-entity>
-        <a-box position="-0.2 0.5 2.5"  depth="2" height="1" width="2" color="red"></a-box>
-        <a-box position="-0.2 0.5 0" depth="2" height="1" width="2" color="blue" drag-rotate-component></a-box>
+        <a-sky color="white"></a-sky>
+        <a-entity id="lettersEntity"  scale="2 1 0.5" geometry="primitive:plane;width:2;height:2;" rotation="-30 -30 0" position="-0.2 0 2.5" material="shader:html;target:#target;transparent:false;fps:0.3;"></a-entity>
+        <a-entity geometry="primitive: box ;" scale="2 1 0.5" rotation="0 22 0" position="0 2 -2"  material="color:black"  ></a-entity>
+        <!--<a-box position="-0.2 0.5 2.5"  depth="2" height="1" width="2" color="red"></a-box>
+        <a-box position="-0.2 0.5 0" depth="2" height="1" width="2" color="blue" drag-rotate-component></a-box>-->
+
+
+        <a-entity id="fading-cube" geometry="primitive: box" material="opacity: 1; color: blue">
+            <a-animation attribute="material.opacity" begin="fade" to="0"></a-animation>
+            <a-animation attribute="material.opacity" begin="fade-out" to="1"></a-animation>
+        </a-entity>
     </a-scene>
    
   

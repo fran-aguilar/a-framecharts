@@ -2,9 +2,9 @@
     multiple: true,
     schema: {
         //x y z
-        a: { type: 'vec2', default: { x: 0, y: 0 } },
-        b: { type: 'vec2', default: { x: -0.5, y: 2 } },
-        c: { type: 'vec2', default: { x: 0.5, y: 2 } },
+        a: { type: 'vec3', default: { x: 0, y: 0    ,z:0} },
+        b: { type: 'vec3', default: { x: -0.5, y: 2 ,z:0} },
+        c: { type: 'vec3', default: { x: 0.5, y: 2  ,z:0} },
         color: { default: '#F00' }
     },
     init: function () {

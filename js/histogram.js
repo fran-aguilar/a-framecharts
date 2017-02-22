@@ -56,7 +56,7 @@ AFRAME.registerComponent('histogram', {
                //labelAxis.setAttribute('align', 'left');
                
                labelAxis.setAttribute('position', labelPos);
-//               labelAxis.setAttribute();
+//               labelAxis.setAttribute();  
                entityEl.sceneEl.appendChild(labelAxis);
                relativeZ -= 0.7;
                relativeX = _this.STARTING_POINT.x;

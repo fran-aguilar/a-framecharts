@@ -11,14 +11,16 @@
 </head>
 <body>
     <a-scene>
-        <a-entity id="cubepanel" aframe-edgedcube material="shader: flat; color: green; "> </a-entity>
+        <a-entity id="cubepanel" aframe-edgedcube="inity: 1; lasty: 2; color:blue; width:2;" >
+            <a-animation attribute="aframe-edgedcube.color" from="yellow"  to="red" delay="3000" repeat="indefinite"></a-animation>
 
-        <a-entity id="cubepanel" aframe-edgedcube="inity: 1; lasty: 2; color:blue; width:2" position="2 0 0"> </a-entity>
+            </a-entity>
+        <!--<a-entity id="cubepanel" aframe-edgedcube="inity: 1; lasty: 2; color:blue; width:2" position="2 0 0"> </a-entity>
 
         <a-entity id="cubepanel" aframe-edgedcube="inity: 4; lasty: 3; color:blue; width:2" position="4 0 0"> </a-entity>
 
 
-        <a-entity id="cubepanel" aframe-edgedcube="inity: 4; lasty: 3; color:blue; width:2" position="4 0 0"> </a-entity>
+        <a-entity id="cubepanel" aframe-edgedcube="inity: 4; lasty: 3; color:blue; width:2" position="4 0 0"> </a-entity>-->
     </a-scene>
 </body>
 </html>

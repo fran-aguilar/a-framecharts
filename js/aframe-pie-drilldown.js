@@ -1,4 +1,7 @@
-﻿AFRAME.registerComponent('aframe-pie', {
+﻿AFRAME.registerComponent('aframe-pie-drilldown', {
+    schema: {
+        foo: { type: 'string', default: 'bar' }
+    },
     COLORS: ['#2338D9', '#23A2D9', '#23D978', '#BAD923', '#D923D3', '#23D7D7', '#D72323', '#262C07'],
     STARTING_POINT: { x: 0, y: 0, z: -1 },
     init: function () {
@@ -9,6 +12,7 @@
         var MIN_DISTANCE = (0.01 + 0.04615) * FONT_HEIGHT; // 
         $.getJSON('data/first-data-pie-example.json', function (JsonData) {
             //data is the JSON string
+            _this.jsonData = JsonData;
             var relativeX = _this.STARTING_POINT.x; //calculado en un futuro.
             var relativeY = _this.STARTING_POINT.y; //
             var relativeZ = _this.STARTING_POINT.z;
@@ -63,8 +67,8 @@
                     width: 2,
                     align: angleLabel <= Math.PI ? 'left' : 'right'
                 });
-                texto.setAttribute('visible', false);
-                texto.setAttribute('geometry',{primitive: 'plane', width: 'auto', height: 'auto'});
+                texto.setAttribute('visible', true);
+                //texto.setAttribute('geometry',{primitive: 'plane', width: 'auto', height: 'auto'});
 
                 el.setAttribute('color', _this.COLORS[j % _this.COLORS.length]);
                 el.setAttribute('position', { x: relativeX, y: relativeY, z: relativeZ });
@@ -73,7 +77,8 @@
 
                 thethainit = thethainit + myThethaLength;
                 prevLabelPoints.push(actualLabelPoint);
-                //TODO: going to delete.
+
+                //drillDown
                 el.addEventListener('click', function (event) {
                     var elId = this.getAttribute('id');
                     var id = elId.substring('pie'.length, elId.length);
@@ -87,5 +92,7 @@
                 entityEl.appendChild(texto);
             }
         });
+    }, update: function(oldData) {
+        console.log(this.jsonData);
     }
 });

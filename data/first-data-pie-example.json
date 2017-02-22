@@ -2,37 +2,74 @@
   "series": [
     {
       "name": "Brands",
-      "colorByPoint": true,
       "data": [
         {
+          "name": "Microsoft Internet Explo123rer1",
+          "y": 1
+        },
+        {
+          "name": "Microsoft Internet Explo13rer1",
+          "y": 1
+        },
+        {
+          "name": "Microsoft Inte21rnet Explorer1",
+          "y": 1
+        },
+        {
+          "name": "Mic1rosoft In11ternet Explorer1",
+          "y": 1
+        },
+        {
+          "name": "Microsoft Internet Explorer1",
+          "y": 1
+        },
+        {
+          "name": "Microsoft Internet Explorer1",
+          "y": 10
+        },
+        {
+          "name": "Microsoft Internet Explorer2",
+          "y": 10
+        },
+        {
+          "name": "Microsoft Internet Explorer3",
+          "y": 10
+        },
+        {
+          "name": "Microsoft Internet Explore2r",
+          "y": 10
+        },
+        {
+          "name": "Microsoft Internet12 Explorer",
+          "y": 10
+        },
+        {
           "name": "Microsoft Internet Explorer",
-          "y": 56.33
+          "y": 10
         },
         {
-          "name": "Chrome",
-          "y": 24.03,
-          "sliced": true,
-          "selected": true
+          "name": "Microsoft Internet 31Explorer",
+          "y": 10
         },
         {
-          "name": "Firefox",
-          "y": 10.38
+          "name": "Microsoft Internet 31Explorer",
+          "y": 5
         },
         {
-          "name": "Safari",
-          "y": 4.77
+          "name": "Microsoft Internet 31Explorer",
+          "y": 5
         },
         {
-          "name": "Opera",
-          "y": 0.91
+          "name": "Microsoft Internet 31Explorer",
+          "y": 5
         },
         {
-          "name": "Proprietary Undetectable",
-          "y": 1.2
+          "name": "Microsoft Internet 31Explorer",
+          "y": 5
         },
         {
-          "name": "Proprietary Undetectable",
-          "y": 2.38
+          "name": "Microsoft Internet 31Explorer",
+          "y": 5
         }
       ]
     }

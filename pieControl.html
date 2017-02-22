@@ -6,18 +6,21 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
         crossorigin="anonymous"></script>
-<script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+<script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
     <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
     <script src="js/aframe-pie.js"></script>
 </head>
 <body>
     <a-scene>
-        <a-entity aframe-pie rotation="-90 0 0"></a-entity>
-        <a-entity camera look-controls wasd-controls mouse-cursor position="0 -3 0.63" rotation="3.44 -5.05 0">
-
-
+        <a-entity id="prueba" text="value: hola mundo!!;  width:1.5;" position="0 0 -2" material="color:blue;"></a-entity>
+        <a-entity aframe-pie  ></a-entity>
+        <a-circle color="#CCC" radius="1.4" position="0 0 -1"></a-circle>
+        <a-entity camera look-controls wasd-controls mouse-cursor position="0 0 0" rotation="3.44 -5.05 0">
+            
+            
 
         </a-entity>
+        
     </a-scene>
 </body>
 </html>

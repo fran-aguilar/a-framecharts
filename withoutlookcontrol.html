@@ -1,0 +1,62 @@
+﻿<html>
+<head>
+    <title>Rotation</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    AFRAME.registerComponent('drag-rotate-component',{
+      schema : { speed : {default:1}},
+      init : function(){
+        this.ifMouseDown = false;
+        this.x_cord = 0;
+        this.y_cord = 0;
+        document.addEventListener('mousedown',this.OnDocumentMouseDown.bind(this));
+        document.addEventListener('mouseup',this.OnDocumentMouseUp.bind(this));
+        document.addEventListener('mousemove', this.OnDocumentMouseMove.bind(this));
+        document.addEventListener('click', this.OnDocumentMouseClick.bind(this));
+      },
+      OnDocumentMouseDown : function(event){
+        this.ifMouseDown = true;
+        this.x_cord = event.clientX;
+        this.y_cord = event.clientY;
+      },
+      OnDocumentMouseUp : function(){
+        this.ifMouseDown = false;
+      },
+      OnDocumentMouseMove : function(event)
+      {
+        if(this.ifMouseDown)
+        {
+          var temp_x = event.clientX-this.x_cord;
+          var temp_y = event.clientY-this.y_cord;
+          if(Math.abs(temp_y)<Math.abs(temp_x))
+          {
+            this.el.object3D.rotateY(temp_x*this.data.speed/1000);
+          }
+          else
+          {
+            this.el.object3D.rotateX(temp_y*this.data.speed/1000);
+          }
+          this.x_cord = event.clientX;
+          this.y_cord = event.clientY;
+        }
+      },
+      OnDocumentMouseClick: function(event)
+      {
+          this.el.setAttribute('color', 'red');
+      }
+    });
+    </script>
+    <a-scene>
+        <a-box id="b1" color="green" position="2 2 -3" drag-rotate-component></a-box>
+        <a-box id="b2" color="blue" position="-2 2 -3"></a-box>
+        <!--<a-camera position="0 0 0" look-controls="enabled:false" wasd-controls="enabled:false">-->
+            <a-camera position="0 0 0" >
+                <a-cursor></a-cursor>
+            </a-camera>
+    </a-scene>
+
+</body>
+</html>

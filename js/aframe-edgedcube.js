@@ -5,7 +5,7 @@
         inity: { type: "number", default: 2 },
         lasty: { type: "number", default: 1 },
         width: { type: "number", default: 2 },
-        color: { default: '#F00' }
+        color: { type: "color", default: '#F00' }
     },
     init: function () {
         var data = this.data;
@@ -96,8 +96,16 @@
         if (Object.keys(oldData).length === 0) { return; }
         // Material-related properties changed. Update the material.
         if (data.color !== oldData.color) {
-            for (var i = 0; i < el.children.length; i++) {
-                el.children[i].getObject3D('mesh').material.color = new THREE.Color(data.color);
+            var items = el.querySelectorAll('[aframe-side]');
+            for (var i = 0; i < items.length; i++) {
+                var sideObj = items[i].getAttribute('aframe-side');
+                items[i].setAttribute('aframe-side', {
+                    color: data.color,
+                    a: sideObj.a,
+                    b: sideObj.b,
+                    c: sideObj.c,
+                    d: sideObj.d
+                });
             }
 
         }

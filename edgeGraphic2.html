@@ -8,9 +8,7 @@
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
 
     <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
-    <script src="js/aframe-triangle.js"></script>
-    <script src="js/aframe-side.js"></script>
-    <script src="js/aframe-edgedcube.js"></script>
+    <script src="js/edgedcube.js"></script>
 	<meta charset="utf-8" />
 </head>
 <body>
@@ -39,11 +37,15 @@
                     var myHeight = JsonData.histogram.series[0].data[j];
                     
                     var el = document.createElement('a-entity');
-                    el.setAttribute('aframe-edgedcube', {
-                        inity: previousHeight, lasty: myHeight,
-                        color: '#F00',
-                        width:BAR_WIDTH 
+                    el.setAttribute('geometry', {
+                        primitive: 'edgedcube',
+                        inith: previousHeight,
+                        lasth: myHeight,
+                        width: BAR_WIDTH ,
+                        depth: BAR_DEPTH
                     });
+
+                    el.setAttribute('material', { color: 'red' });
                     el.setAttribute('position', { x: BAR_WIDTH * j + (0.01 * j), y: 0, z: 0 });
                   
                     //el.addEventListener('mouseenter', function (event) {
@@ -70,25 +72,25 @@
                     previousHeight = myHeight;
                 }
                 entityEl.setAttribute('scale', { x: 1, y: MAX_WIDTH / yMaxPoint, z: 1 });
-                entityEl.querySelectorAll('[aframe-edgedcube]').forEach(function (item) {
+                entityEl.querySelectorAll('[geometry]').forEach(function (item) {
                 
-                    var oldColor = '#F00';
+                    var oldColor = 'red';
                     var auxEntity = document.createElement('a-animation');
                     auxEntity.setAttribute( 'from' , oldColor);
                     auxEntity.setAttribute("to", "blue");
                     auxEntity.setAttribute("begin", 'mouseenter');
-                    auxEntity.setAttribute("attribute", "aframe-edgedcube.color");
+                    auxEntity.setAttribute("attribute", "material.color");
 
                     var auxEntity2 = document.createElement('a-animation');
                     auxEntity2.setAttribute('from', "blue");
                     auxEntity2.setAttribute("to", oldColor);
                     auxEntity2.setAttribute("begin", 'mouseleave');
-                    auxEntity2.setAttribute("attribute", "aframe-edgedcube.color");
+                    auxEntity2.setAttribute("attribute", "material.color");
 
-                    //item.appendChild(auxEntity);
-                    //item.appendChild(auxEntity2);
+                     item.appendChild(auxEntity);
+                     item.appendChild(auxEntity2);
                 });
-                entityEl.setAttribute('position', { x: 2, y: 0, z: 0 });
+                //entityEl.setAttribute('position', { x: 2, y: 0, z: 0 });
                 sceneEl.appendChild(entityEl);
             });
         });

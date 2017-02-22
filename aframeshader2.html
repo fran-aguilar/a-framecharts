@@ -1,0 +1,50 @@
+﻿    <!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+    <script src="js/html2canvas.js"></script>
+    <script src="https://unpkg.com/aframe-htmltexture-component@0.x.x/dist/aframe-htmltexture-component.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <a-assets>
+            <div id="hello" class="scoreboard">
+                <h1>Final Score!</b></h1>
+                <center>
+                    ⚽
+                </center>
+
+                <table>
+                    <tr><td>Country</td><td>Score</td></tr>
+                    <tr><td>Germany</td><td>1</td></tr>
+                    <tr><td>United Kingdom</td><td>0</td></tr>
+                </table>
+
+            </div>
+
+            <div id="goodbye">
+                <center>1</center>
+            </div>
+
+
+            <div id="bears" class="aww">
+                <h1>Friends!</h1>
+                <img crossorigin="anonymous" style="width: 480px; height: 420px" src="http://i.embed.ly/1/display/resize?url=http%3A%2F%2Fimg11.deviantart.net%2Fa121%2Fi%2F2014%2F244%2F1%2Fc%2Fstargazer_by_satania-d7xiu7g.png&animate=false&quality=90&grow=true&width=480&height=420&key=90eb0b46c1e146e5afbbe0279e77866b" />
+            </div>
+
+            <div class="tower">
+                <ul>
+                    <li>🐴</li>
+                    <li>🐮</li>
+                    <li>🐷</li>
+                    <li>🐹</li>
+                </ul>
+            </div>
+        </a-assets>
+        <a-entity geometry="primitive: box" scale="0.5 2 0.5" rotation="0 22d 0" position="0 2 -4" draw="width: 128; height: 512;" htmltexture="asset: .tower"></a-entity>
+
+        </a-scene>
+</body>
+</html>
