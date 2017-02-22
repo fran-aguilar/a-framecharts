@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello world! A-Frame</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
+    <script src="js/aframe-triangle.js"></script>
+    <script src="js/aframe-side.js"></script>
+    <script src="js/aframe-edgedcube.js"></script>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <a-scene>
+        <a-entity position="0 2.2 4">
+            <a-entity camera look-controls wasd-controls mouse-cursor position="3.59 1 0.63" rotation="3.44 -5.05 0">
+
+            </a-entity>
+        </a-entity>
+
+    </a-scene>
+    <script>
+
+        $(document).ready(function(){ 
+            $.getJSON('data/first-data-example.json', function (JsonData) {
+                var entityEl = document.createElement('a-entity');
+                var sceneEl = document.querySelector('a-scene');
+                var BAR_WIDTH= 0.8;
+                var BAR_DEPTH = 0.5;
+                var STARTING_POINT = {x:-2, y:0,z: -4};
+                var MAX_WIDTH = 8;
+                var COLORS = ['#2338D9', '#23A2D9', '#23D978', '#BAD923', '#D923D3'];
+                var previousHeight = 0.1;
+                var yMaxPoint = 0;
+                for (var j = 0; j < JsonData.histogram.series[0].data.length; j++) {
+                    var myHeight = JsonData.histogram.series[0].data[j];
+                    
+                    var el = document.createElement('a-entity');
+                    el.setAttribute('aframe-edgedcube', {
+                        inity: previousHeight, lasty: myHeight,
+                        color: '#F00',
+                        width:BAR_WIDTH 
+                    });
+                    el.setAttribute('position', { x: BAR_WIDTH * j + (0.01 * j), y: 0, z: 0 });
+                    el.addEventListener('mouseenter', function (event) {
+                        var meshChilds =this.children[0];
+                        for (var i = 0; i < meshChilds.children.length; i++) {
+                            var triagMesh = meshChilds.children[i].getObject3D('mesh');
+                            triagMesh.material.color = new THREE.Color('#00F');
+                        }
+                        //triagMesh.material.emissive.setHex(0.5);
+                    });
+                    el.addEventListener('mouseleave', function (event) {
+                        var meshChilds = this.children[0];
+                        var oldColor = this.getAttribute('aframe-edgedcube').color;
+                        for (var i = 0; i < meshChilds.children.length; i++) {
+                            var triagMesh = meshChilds.children[i].getObject3D('mesh');
+                            triagMesh.material.color = new THREE.Color(oldColor);
+                        }
+                        //triagMesh.material.emissive.setHex(0.5);
+                    });
+                    //getting max.
+                    if (myHeight > yMaxPoint) {
+                        yMaxPoint = myHeight;
+                    }
+                    entityEl.appendChild(el);
+                    //continue 
+                    previousHeight = myHeight;
+                }
+                entityEl.setAttribute('scale', { x: 1, y: MAX_WIDTH / yMaxPoint, z: 1 });
+                entityEl.setAttribute('position', { x: 2, y: 0, z: 0 });
+                sceneEl.appendChild(entityEl);
+            });
+        });
+    </script>
+</body>
+</html>

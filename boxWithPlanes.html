@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Hello world! A-Frame</title>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="js/aframe-triangle.js"></script>
+    <script src="js/aframe-side.js"></script>
+</head>
+<body>
+    <a-scene>
+        <a-entity id="cubepanel">
+            <a-entity id="cambio" aframe-side="color: blue; a: 0 0; b: 2 0; c:2 1.5; d:0 2"></a-entity>
+            <a-entity aframe-side="color: green; a: 0 0; b: 2 0; c:2 2; d:0 2" rotation="0 90 0"></a-entity>
+            <a-entity aframe-side="color: red; a: 0 0; b: 2 0; c:2 1.5; d:0 1.5" rotation="0 90 0" position="2 0 0"></a-entity>
+            <a-entity aframe-side="color: yellow; a: 0 0; b: 2 0; c:2 2; d:0 2" rotation="-90 0 0"></a-entity>
+
+
+            <a-entity aframe-side="color: pink; a: 0 0; b: 2.06155281280883 0; c:2.06155281280883 2 ; d:0 2" rotation="-76 90 -90" position="0 2 0"></a-entity>
+            <a-entity aframe-side="color: grey; a: 0 0; b: 2 0; c:2 1.5; d:0 2" position="0 0 -2"></a-entity>
+        </a-entity>
+    </a-scene>
+</body>
+</html>

@@ -8,8 +8,8 @@ AFRAME.registerComponent('aframe-line',{
     },
     init: function(){
         
-            this.__lineGeometry = new THREE.Geometry();
-          var vertArray = this.__lineGeometry.vertices;
+        this.geometry = new THREE.Geometry();
+        var vertArray = this.geometry.vertices;
        // var cameraPosition = this.el.sceneEl.querySelector("[camera]").object3D.position;
        // cameraPosition.z = cameraPosition.z-4;
        // var pointTo = new THREE.Vector3(cameraPosition.x,cameraPosition.y +100,cameraPosition.z);
@@ -26,10 +26,12 @@ AFRAME.registerComponent('aframe-line',{
         vectFrom.setY(datapoint.y);
         vectFrom.setZ(datapoint.z);
         vertArray.push(vectTo , vectFrom);
-        this.__lineGeometry.computeLineDistances();
+        this.geometry.computeLineDistances();
         var lineMaterial = new THREE.LineBasicMaterial( { color: this.data.color } );
-        var line = new THREE.Line( this.__lineGeometry, lineMaterial );
-        scene.add(line);
+        var lineMesh = new THREE.Line(this.geometry, lineMaterial);
+        this.mesh = lineMesh;
+        this.material = lineMaterial;
+        this.el.setObject3D('mesh', this.mesh);
     },
     update: function(){
         console.log('update meth');

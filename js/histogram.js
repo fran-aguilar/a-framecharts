@@ -1,22 +1,12 @@
 //registering component
 
 AFRAME.registerComponent('histogram', {
-    dependencies: ['aframe-line'],
     BAR_WIDTH: 0.8,
     BAR_DEPTH: 0.5,
     STARTING_POINT: {x:-2, y:0,z: -4},
     MAX_WIDTH: 8,
     COLORS : ['#2338D9', '#23A2D9','#23D978','#BAD923','#D923D3'],
     init: function () {
-
-        //var sceneEl = document.querySelector('a-scene');
-        /*
-        var entityEl = document.createElement('a-entity');
-        sceneEl.appendChild(entityEl);
-        */
-       
-        
-        
         var entityEl = this.el;
         var _this= this;
         var yMaxPoint = 0;
@@ -38,7 +28,7 @@ AFRAME.registerComponent('histogram', {
                     el.setAttribute('height', myHeight);
                     el.setAttribute('depth',_this.BAR_DEPTH);
                     el.setAttribute('color',_this.COLORS[ i % _this.COLORS.length]);
-                    
+                   
                     
                     el.setAttribute('position', { x: relativeX, y: myYPosition, z: relativeZ });
                     //ojo esto
@@ -55,14 +45,31 @@ AFRAME.registerComponent('histogram', {
                     entityEl.appendChild(el);
                }
                zPointArray.push(relativeZ);
+                //add label
+               var labelPos = { x: _this.STARTING_POINT.x - (_this.BAR_WIDTH / 2) - 1.1, y: _this.STARTING_POINT.y, z: relativeZ };
+               var labelAxis = document.createElement('a-entity');
+               labelAxis.setAttribute('bmfont-text', {
+                   text: JsonData.histogram.series[i].name,
+                   color: _this.COLORS[i % _this.COLORS.length],
+                   align: 'left'
+               });
+               //labelAxis.setAttribute('align', 'left');
+               
+               labelAxis.setAttribute('position', labelPos);
+//               labelAxis.setAttribute();
+               entityEl.appendChild(labelAxis);
                relativeZ -= 0.7;
                relativeX = _this.STARTING_POINT.x;
-               relativeY =_this.STARTING_POINT.y;
+               relativeY = _this.STARTING_POINT.y;
+                
+               
             }
-            //scale all the entities 
-            entityEl.setAttribute('scale', {x:1, y: _this.MAX_WIDTH / yMaxPoint, z:1});
+            //scale all the entities      
+            _this.__createYaxis(_this, yMaxPoint);
+            entityEl.setAttribute('scale', { x: 1, y: _this.MAX_WIDTH / yMaxPoint, z: 1 });
+            
             _this.__createXaxis(_this , xPointArray);
-            _this.__createYaxis(_this, _this.MAX_WIDTH);
+       
             if(zPointArray.length >1){
                 _this.__createZaxis(_this, zPointArray);
             }
@@ -86,7 +93,7 @@ AFRAME.registerComponent('histogram', {
             frompoint:{x:xMax, y:_this.STARTING_POINT.y, z: _this.STARTING_POINT.z + 0.4},
             color: 'black'
         });
-        _this.el.sceneEl.appendChild(newLine);
+        _this.el.appendChild(newLine);
     },
     __createYaxis: function __createYaxis(_this,yMaxPoint){
         yMin = _this.STARTING_POINT.y;
@@ -97,7 +104,7 @@ AFRAME.registerComponent('histogram', {
             frompoint:{x:_this.STARTING_POINT.x - (_this.BAR_WIDTH /2) -0.1, y:yMax, z: _this.STARTING_POINT.z + 0.4},
             color: 'black'
         });
-        _this.el.sceneEl.appendChild(newLine);
+        _this.el.appendChild(newLine);
     },
     __createZaxis: function __createZaxis(_this, zPointArray){
         zMin = zPointArray[0] + 0.4;
@@ -108,7 +115,7 @@ AFRAME.registerComponent('histogram', {
             frompoint:{x:_this.STARTING_POINT.x - (_this.BAR_WIDTH /2) -0.1, y:_this.STARTING_POINT.y, z: zMax},
             color: 'black'
         });
-        _this.el.sceneEl.appendChild(newLine);
+        _this.el.appendChild(newLine);
     }
 
 });
