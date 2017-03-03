@@ -2,6 +2,7 @@
   <head>
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>  
       <script src="js/smoothcurvepath.js"></script>
+      <script src="js/aframe-grid.js"></script>
  <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
    <script src="js/func.js"></script>
   </head>
@@ -21,12 +22,13 @@
 
           var scene = document.querySelector('a-scene');
           var dashBoard = new AFRAMEDC.DashBoard(scene);
-          panel = new AFRAMEDC.Panel(dashBoard, [0,0,0],4);
+          panel = new AFRAMEDC.Panel(dashBoard, [5,-5,-1],4);
           panel.size([18, 18]);
-          var mypiechart2 = new AFRAMEDC.BarsChart(panel);
+          var mysmoothchart = new AFRAMEDC.SmoothCurveChart(panel);
+          var mypiechart2 = new AFRAMEDC.BarsChart(panel).numberOfYLabels(11);
           var mypiechart = new AFRAMEDC.PieChart(panel);
          
-          var mysmoothchart = new AFRAMEDC.SmoothCurveChart(panel);
+          
 
           mypiechart.data([{ key: 'a', value: 45 }, { key: 'b', value: 45 }, { key: 'c', value: 10 }]);
          
