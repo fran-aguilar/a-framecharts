@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script> 
+    
+	<meta charset="utf-8" />
+</head>
+<body>
+    <script>
+        AFRAME.registerComponent('smooth-curve-path', {
+            schema: {
+                color: { default: '#000' },
+                path: {
+                    //scaping bug??
+                    type:"bool",
+                    default: [{ x: -0.5, y: 0, z: 0 }, { x: 0.5, y: 0, z: 0 }],
+
+                    // Deserialize path in the form of comma-separated vec3s: `0 0 0, 1 1 1, 2 0 3`.
+                    // update only with setAttribute 'smooth-curve-path' , 'path', [ ...]
+                    parse: function (value) {
+                        if (Array.isArray(value)) {
+                            return value;
+                        }
+                        return value.split(',').map(AFRAME.utils.coordinates.parse);
+                    }
+                }
+            },
+
+            update: function () {
+                var material = new THREE.LineBasicMaterial({
+                    color: this.data.color
+                });
+                var curve, vertices = [];
+                this.data.path.forEach(function (vec3) {
+                    vertices.push(
+                      new THREE.Vector3(vec3.x, vec3.y, vec3.z)
+                    );
+                });
+                curve = new THREE.CatmullRomCurve3(vertices);
+
+                var geometry = new THREE.Geometry();
+                geometry.vertices = curve.getPoints(512);
+                var curveObject = new THREE.Line(geometry, material);
+                this.el.setObject3D('mesh', curveObject);
+            },
+
+            remove: function () {
+                this.el.removeObject3D('mesh');
+            }
+        });
+    </script>
+    <a-scene>
+        <!--<a-entity bmfont-text="text: Hello World;"></a-entity>-->
+        <a-assets>
+            <a-mixin id="red" line="color: #E20049"></a-mixin>
+        </a-assets>
+
+        <a-entity geometry="primitive: circle; radius: 10; segments: 64" material="color: #F79F24" position="0 0 -12"></a-entity>
+
+        <a-entity id="happy" position="0 2 -10">
+            <a-entity mixin="red" smooth-curve-path="path: 1 1 0, 1 0.5 0, 1 0 0" id="test"></a-entity>
+            <!--<a-entity mixin="red" line="path: 1 1 0, 1 0.5 0, 1 0 0"></a-entity>
+            <a-entity mixin="red" line="path: -2 -1 0, 0 -2 0, 2 -1"></a-entity>-->
+        </a-entity> 
+    </a-scene>
+    <script>
+        //var coordinates = AFRAME.utils.coordinates;
+        var pointarr = [20, 58, 4, 19, 4, 36, 11, 37, 36,
+            50, 63, 28, 88, 19, 24, 95, 8, 26, 2, 17, 24,
+            70, 94, 115, 249, 76, 68, 88, 69, 37, 52, 133,
+            127, 111, 150, 277, 258, 114, 301, 156, 146, 216,
+            226, 193, 239, 223, 126, 284, 213, 60, 292, 236, 131,
+            286, 120, 258, 238, 324, 191, 233, 303, 128, 108, 247,
+            304, 74, 261, 174, 315, 209, 242, 136, 252, 67, 140,
+            333, 299, 179, 99, 246, 150, 215, 284, 404, 59];
+        var foo = {
+            value: 0,
+            point: function(bar){
+                var retpoint = { x: this.value, y: bar, z: 0 };
+                this.value = this.value + 1;
+                return retpoint;
+            }
+        };
+        var path = pointarr.map(function (a) { return foo.point(a); });
+        var pathstr = path.map(AFRAME.utils.coordinates.stringify).join(",");
+        var curve = document.querySelector('#test');
+        //curve.setAttribute('smooth-curve-path', { path: pathstr });
+    </script>
+</body>
+</html>
