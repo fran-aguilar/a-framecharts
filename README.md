@@ -14,4 +14,6 @@ python simplehttpserver.py
   <a href="http:localhost:8000/histogram-animation2.html">Basic Historgram with interaction on mouse's click</a>
   <br />
   The last example uses <i>aframe-mouse-cursor-component</i>
+  
+  <a href="https://fran-aguilar.github.io/a-framecharts/">All latest Examples</a>
 </div>
