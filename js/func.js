@@ -33,7 +33,7 @@ AFRAMEDC.DashBoard.prototype.addChart = function (chart) {
     }
     if (chart instanceof AFRAMEDC.BasicChart) {
         this.allCharts.push(chart);
-        chart._parentDashBoard;
+        chart._parentDashBoard = this;
         this.scene.appendChild(chart.build());
     }
 };
@@ -49,9 +49,14 @@ AFRAMEDC.Panel = function (dashBoard, coords, numberOfCharts, size, opacity) {
     this._size = size || [10, 10];
     this._depth = 0.1;
     this.charts = [];
+    this.domElement = null;
+    
+    //TODO: add padding.
+    var PADDING = 1;
     var makeAnchorPoints = function (panel) {
         var numberOfAnchorPoints = panel.numberOfCharts;
         var anchorPoints = [];
+
         if (!(numberOfAnchorPoints >= 2 && numberOfAnchorPoints <= 4)) {
             console.log('invalid number of anchor points');
             return;
@@ -59,19 +64,19 @@ AFRAMEDC.Panel = function (dashBoard, coords, numberOfCharts, size, opacity) {
         if (numberOfAnchorPoints === 4) {
             anchorPoints.push({
                 filled: false,
-                coords: new THREE.Vector3( - panel._size[0] / 2,  - panel._size[1] / 2, 0)
+                coords: new THREE.Vector3(PADDING - panel._size[0] / 2, PADDING - panel._size[1] / 2, 0)
             });
             anchorPoints.push({
                 filled: false,
-                coords: new THREE.Vector3(0,  - panel._size[1] / 2,0)
+                coords: new THREE.Vector3(PADDING, PADDING - panel._size[1] / 2, 0)
             });
             anchorPoints.push({
                 filled: false,
-                coords: new THREE.Vector3( - panel._size[0] / 2, 0, 0)
+                coords: new THREE.Vector3(PADDING - panel._size[0] / 2, PADDING, 0)
             });
             anchorPoints.push({
                 filled: false,
-                coords: new THREE.Vector3(0, 0, 0)
+                coords: new THREE.Vector3(PADDING, PADDING, 0)
             });
         }
 
@@ -112,6 +117,10 @@ AFRAMEDC.Panel = function (dashBoard, coords, numberOfCharts, size, opacity) {
         makeAnchorPoints(this);
         return this;
     };
+    this.getChartSize = function () {
+        //calculate inner bounds.
+        return [(this._size[0] / 2) - PADDING * 2, (this._size[1] / 2) - PADDING * 2];
+    };
 };
 //build DOM Element.
 AFRAMEDC.Panel.prototype.build = function () {
@@ -144,29 +153,104 @@ AFRAMEDC.Panel.prototype.build = function () {
 
         panelOffset.appendChild(entityEl);
     }
-    panel.id = 'panel';
+    if (this._title) {
+        //addLabel
+        var texto;
+
+        texto = document.createElement("a-entity");
+       
+        var TEXT_WIDTH = this._size[0];
+        texto.setAttribute("text", {
+            color: "#000000",
+            side: "double",
+            value: this._title,
+            width: TEXT_WIDTH,
+            wrapCount: 30
+        });
+        var labelpos = { x:0, y:this._size[1] /2 +1, z: 0 };
+        //texto.setAttribute('geometry',{primitive: 'plane', width: 'auto', height: 'auto'});
+        texto.setAttribute('position', labelpos);
+        panel.appendChild(texto);
+    }
     panel.appendChild(panelOffset);
+    this.domElement = panel;
     return panel;
 };
+AFRAMEDC.Panel.prototype.remove = function () {
+    if (this.domElement) {
+        var parent = this.domElement.parentElement;
+        parent.removeChild(this.domElement);
+        this.domElement = null;
+    }
+};
+AFRAMEDC.Panel.prototype.rebuild = function (index) {
+    for (var i = 0 ; i < this.charts.length ; i++) {
+        if (i !== index) {
+            var parent = this.charts[i].domElement.parentElement;
+            parent.removeChild(this.charts[i].domElement);
+            this.domElement = null;
+            parent.appendChild(this.charts[i].build());
+        }
+    }
+};
+AFRAMEDC.Panel.prototype.title = function (newtitle) {
+    if (!newtitle) {
+        console.log("arg need");
+        return;
+    }
+    this._title = newtitle;
+    return this;
+}
 //TODO: overwrite to add a panel obj.
 AFRAMEDC.DashBoard.prototype.addPanel = function (coords, numberOfCharts, size, opacity) {
     if (arguments.length === 1 && coords instanceof AFRAMEDC.Panel) {
         this.allPanels.push(coords);
-        this.scene.appendChild(coords.build());
-        return;
+        //this.scene.appendChild(coords.build());
+        return coords;
     }
 
     var panelObj = new AFRAMEDC.Panel(coords, numberOfCharts, size, opacity);
     this.allPanels.push(panelObj);
-    this.scene.appendChild(panelObj.build());
+    //this.scene.appendChild(panelObj.build());
+    return panelObj;
+};
+
+
+AFRAMEDC.DashBoard.prototype.removeAll = function () {
+    var i = 0;
+    if (this.allCharts && this.allCharts.length > 0) {
+        for (i = 0; i < this.allCharts.length ; i++) {
+            this.allCharts[i].remove();
+        }
+    }
+    if (this.allPanels && this.allPanels.length > 0) {
+        for (i = 0 ; i < this.allPanels.length; i++) {
+            this.allPanels[i].remove();
+        }
+    }
+};
+
+AFRAMEDC.DashBoard.prototype.renderAll = function () {
+    //borrado previo..
+    this.removeAll();
+
+    if (this.allCharts && this.allCharts.length > 0) {
+        for (i = 0; i < this.allCharts.length ; i++) {
+            this.scene.appendChild(this.allCharts[i].build());
+        }
+    }
+
+    if (this.allPanels && this.allPanels.length > 0) {
+        for (i = 0; i < this.allPanels.length ; i++) {
+            this.scene.appendChild(this.allPanels[i].build());
+        }
+    }
 };
 //end panel
 
 //begin basicChart
 AFRAMEDC.BasicChart = function (param) {
     this._parentPanel = null;
-
-
     this.parts = [];
     this.xLabels = [];
     this.yLabels = [];
@@ -185,14 +269,16 @@ AFRAMEDC.BasicChart = function (param) {
         for (var i = 0; i < param.anchorPoints.length; i++) {
             if (!param.anchorPoints[i].filled) {
                 //update size of chart.
-                this._width = param._size[0] / 2;
-                this._height = param._size[1] / 2;
+                //TODO: inner bounds
+                var innerbounds = param.getChartSize();
+                this._width = innerbounds[0] ;
+                this._height = innerbounds[1];
                 this._coords = param.anchorPoints[i].coords;
                 this._coords.x = this._coords.x;
                 this._coords.y = this._coords.y;
                 this._coords.z = this._coords.z;
                 param.anchorPoints[i].filled = true;
-                param.charts.push(this);
+                this._panelIndex = param.charts.push(this) -1;
                 this._parentPanel = param;
 
                 break;
@@ -293,7 +379,15 @@ AFRAMEDC.BasicChart.prototype.addCustomEvents = function (argFunction) {
     this._addCustomEvents = argFunction;
     return this;
 };
+AFRAMEDC.BasicChart.prototype.gridsOn = function () {
+    this._gridsOn = true;
+    return this;
+};
 
+AFRAMEDC.BasicChart.prototype.gridsOff = function () {
+    this._gridsOn = false;
+    return this;
+};
 // data when crossfilter is not used
 AFRAMEDC.BasicChart.prototype.data = function (data) {
     if (!arguments.length) {
@@ -303,6 +397,13 @@ AFRAMEDC.BasicChart.prototype.data = function (data) {
     this._data = data;
     return this;
 };
+AFRAMEDC.BasicChart.prototype.remove = function () {
+    if (this.domElement) {
+        var parent = this.domElement.parentElement;
+        parent.removeChild(this.domElement);
+        this.domElement = null;
+    }
+}
 AFRAMEDC.BasicChart.prototype.getEscene = function () {
     if (this._parentPanel) {
         return this._parentPanel.dashBoard.scene;
@@ -382,13 +483,13 @@ AFRAMEDC.BasicChart.prototype.addLabels = function () {
             var texto = document.createElement("a-entity");
             TEXT_WIDTH = 6;
             //FIXME: depende del tamaño de letra...
-            var xPos =     -0.6;
+            var xPos =     -0.7;
             //var yPos = BasicChart._coords.y + step +  0.36778332145402703 / 2;
             var yPos =   step;
             texto.setAttribute("text", {
                 color: "#000000",
                 side: "double",
-                value: value.toString(),
+                value: value.toFixed(2),
                 width: TEXT_WIDTH,
                 wrapCount: 30,
                 align: "center"
@@ -398,16 +499,19 @@ AFRAMEDC.BasicChart.prototype.addLabels = function () {
             var labelpos = { x: xPos, y: yPos, z:   0 };
             texto.setAttribute('position', labelpos); 
             return texto;
-        }
+        } 
+        var _data;
         if (this._data) {
-            var dataValues = this._data.map(function (a) { return a.value; });
-            topYValue = Math.max.apply(null, dataValues);
-            numberOfValues = dataValues.length;
+            _data = this._data;
+        } else {
+            _data = this._group.top(Infinity);
         }
-
+        var dataValues =  _data.map(function (a) { return a.value; });
+        topYValue = Math.max.apply(null, dataValues);
+        numberOfValues = dataValues.length;
         //Y AXIS
         //var numerOfYLabels=Math.round(_chart._height/20);
-        var stepYValue= Math.round(topYValue/this._numberOfYLabels);
+        var stepYValue= topYValue/this._numberOfYLabels;
         var stepY=this._height/this._numberOfYLabels;
         var labels = [];
         for (var i = 0; i <this._numberOfYLabels+1; i++) {
@@ -438,7 +542,9 @@ AFRAMEDC.PieChart.prototype.constructor = AFRAMEDC.PieChart;
 
 //data is the JSON string
 AFRAMEDC.PieChart.prototype.build = function (location) {
-    if (!this._data || this._data.length === 0) return;
+    //TODO _data or group
+    if (  (!this._data || this._data.length === 0) &&
+        !this._group ) return;
     var relativeX, relativeY, relativeZ;
     var thethainit = 0;
     var FONT_HEIGHT = 2;
@@ -448,22 +554,23 @@ AFRAMEDC.PieChart.prototype.build = function (location) {
     var radius = Math.min(this._width / 2, this._height / 2);
     relativeX = radius;
     relativeY = radius;
+    var _data;
+    if (this._data) {
+        _data = this._data;
+    } else {
+        _data = this._group.top(Infinity);
+    }
     relativeZ = this._depth /2 ;
-    var isDistanced = function (prevPoints, refpoint, min_distance) {
-        if (!prevPoints) return -1;
-        var found = false;
-        var p = 0;
-        while (p < prevPoints.length && !found) {
-            found = (Math.abs(prevPoints[p].y - actualLabelPoint.y) < MIN_DISTANCE) && Math.sign(actualLabelPoint.x) == Math.sign(prevPoints[p].x);
-            if (!found)
-                p = p + 1;
-        }
-        return found ? p : -1;
-    };
+    var suma = function(acc,val){
+        return acc + val;
+    }
+    var dataValues = _data.map(function (b) { return b.value;});
+    var dataSum = dataValues.reduce(suma, 0);
+    var dataValues = dataValues.map(function (b) { return (b / dataSum); });
     var prevLabelPoints = [];
 
-    for (var j = 0; j < this._data.length; j++) {
-        var myThethaLength = (360 * this._data[j].value) / 100;
+    for (var j = 0; j < dataValues.length; j++) {
+        var myThethaLength = (360 * dataValues[j]) ;
         var el = document.createElement("a-cylinder");
 
         el.setAttribute("theta-start", thethainit);
@@ -478,31 +585,7 @@ AFRAMEDC.PieChart.prototype.build = function (location) {
         //to rads
         angleLabel = (angleLabel * 2 * Math.PI) / 360;
         //min distance.
-        var actualLabelPoint = { x: Math.sin(angleLabel) * 1.4, y: Math.cos(angleLabel) * 1.4, z: relativeZ };
-        if (prevLabelPoints.length > 0) {
-            var distIndex = isDistanced(prevLabelPoints, actualLabelPoint, MIN_DISTANCE);
-            if (distIndex != -1) {
-                actualLabelPoint.y = prevLabelPoints[prevLabelPoints.length - 1].y + MIN_DISTANCE * (angleLabel <= Math.PI ? -1 : 1);
-            }
-        }
-        if (angleLabel <= Math.PI) {
-            actualLabelPoint.x = actualLabelPoint.x + 1.4;
-        } else {
-            actualLabelPoint.x = actualLabelPoint.x - 1.4;
-        }
-        //var texto = document.createElement("a-entity");
-        ////todo: recalculate distance from graph.
-        //texto.setAttribute("position", actualLabelPoint);
-        //texto.setAttribute("id", "label" + j);
-        //texto.setAttribute("text", {
-        //    color: _this.COLORS[j % _this.COLORS.length],
-        //    side: "double",
-        //    value: JsonData.series[0].data[j].name,
-        //    width: 2,
-        //    align: angleLabel <= Math.PI ? "left" : "right"
-        //});
-        //texto.setAttribute("visible", false);
-        //texto.setAttribute("geometry",{primitive: "plane", width: "auto", height: "auto"});
+
         var actualColor = COLORS[j % COLORS.length];
         el.setAttribute("color", actualColor);
         el.setAttribute("position", { x: relativeX, y: relativeY, z: relativeZ });
@@ -510,27 +593,35 @@ AFRAMEDC.PieChart.prototype.build = function (location) {
         //el.setAttribute("id", "pie" + j);
 
         thethainit = thethainit + myThethaLength;
-        prevLabelPoints.push(actualLabelPoint);
         //TODO: going to delete.
-        //el.addEventListener("click", function (event) {
-        //    var elId = this.getAttribute("id");
-        //    var id = elId.substring("pie".length, elId.length);
-        //    var text = this.parentEl.querySelector("#label" + id);
-        //    var actualVis = text.getAttribute("visible");
-        //    text.setAttribute("visible", !actualVis);
-        //});
+
         //storing parts info..
         var piePart = {
-            name: "key:" + this._data[j].key + " value:" + this._data[j].value,
+            name: "key:" + _data[j].key + " value:" + (dataValues[j] *100).toFixed(3),
             data: {
-                key: this._data[j].key,
-                value: this._data[j].value
+                key: _data[j].key,
+                value: _data[j].value
             },
             position: { x: relativeX, y: relativeY + this._width / 2 + 0.25, z: relativeZ },
             origin_color: actualColor
         };
         piePart.DOMElement = el;
         this.parts.push(piePart);
+        var myFunc = function (chart, element) {
+            
+            if (chart._dimension) {
+                var myDim = chart._dimension;
+                myDim.filterAll();
+                myDim = myDim.filter(element.data.key);
+                if (chart._parentPanel) {
+                    chart._parentPanel.rebuild(chart._panelIndex);
+                }
+            }
+        };
+        var myBindFunc = myFunc.bind(null,this,piePart);
+        el.addEventListener("click", myBindFunc);
+
+
         entityEl.appendChild(el);
         //entityEl.appendChild(texto);
     }
@@ -541,6 +632,7 @@ AFRAMEDC.PieChart.prototype.build = function (location) {
         y: this._coords.y  ,
         z: this._coords.z
     });
+    this.domElement = entityEl;
     return entityEl;
 }
 
@@ -552,7 +644,8 @@ AFRAMEDC.BarsChart = function (param) {
 AFRAMEDC.BarsChart.prototype = Object.create(AFRAMEDC.BasicChart.prototype);
 AFRAMEDC.BarsChart.prototype.constructor = AFRAMEDC.BarsChart;
 AFRAMEDC.BarsChart.prototype.build = function () {
-    if (!this._data || this._data.length === 0) return;
+    if ((!this._data || this._data.length === 0) &&
+           !this._group) return;
     var __calculateY = function(initialY, height){
         var returnedY = height / 2 + initialY;
         return returnedY;
@@ -567,7 +660,13 @@ AFRAMEDC.BarsChart.prototype.build = function () {
         }
         return p;
     };
-    var dataValues = this._data.map(function (a) { return a.value; });;
+    var _data;
+    if (this._data && this._data.length > 0) {
+        _data = this._data;
+    } else if (this._group){
+        _data = this._group.top(Infinity);
+    }
+    var dataValues = _data.map(function (a) { return a.value; });;
     dataValues = AFRAMEDC.utils.scale.apply(null, dataValues);
     BAR_WIDTH = this._width / dataValues.length;;
     BAR_DEPTH = this._depth;
@@ -597,10 +696,10 @@ AFRAMEDC.BarsChart.prototype.build = function () {
         
         //storing parts info..
         var barPart = {
-            name: "key:" + this._data[i].key + " value:" + this._data[i].value,
+            name: "key:" + _data[i].key + " value:" + _data[i].value,
             data: {
-                key: this._data[i].key,
-                value: this._data[i].value
+                key: _data[i].key,
+                value: _data[i].value
             },
             position: { x: elPos.x, y: relativeY + MAX_HEIGHT + 0.25, z: elPos.z },
             origin_color: actualColor
@@ -615,8 +714,11 @@ AFRAMEDC.BarsChart.prototype.build = function () {
     for (var lb = 0 ; lb < entLabels.length; lb++) {
         entityEl.appendChild(entLabels[lb]);
     }
-    entityEl.appendChild(this.addGrid());
-    entityEl.setAttribute('position', { x: this._coords.x, y: this._coords.y, z: this._coords.z  });
+    if (this._gridsOn) {
+        entityEl.appendChild(this.addGrid());
+    }
+    entityEl.setAttribute('position', { x: this._coords.x, y: this._coords.y, z: this._coords.z });
+    this.domElement = entityEl;
     return entityEl;
 };
 //BAR CHART END
@@ -647,6 +749,15 @@ AFRAMEDC.SmoothCurveChart.prototype.build = function () {
         color: COLORS[0],
         path: points.map(AFRAME.utils.coordinates.stringify).join(",")
     });
+    var entLabels = this.addLabels();
+    for (var lb = 0 ; lb < entLabels.length; lb++) {
+        entityEl.appendChild(entLabels[lb]);
+    }
+    if (this._gridsOn) {
+        entityEl.appendChild(this.addGrid());
+    }
+    entityEl.setAttribute('position', { x: this._coords.x, y: this._coords.y, z: this._coords.z });
+    this.domElement = entityEl;
     return entityEl;
 };
 
