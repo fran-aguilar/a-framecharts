@@ -193,9 +193,15 @@ AFRAMEDC.Panel.prototype.remove = function () {
 AFRAMEDC.Panel.prototype.rebuild = function (index) {
     for (var i = 0 ; i < this.charts.length ; i++) {
         if (i !== index) {
+            var myNode = this.charts[i].domElement;
+            while (myNode.firstChild) {
+                myNode.removeChild(myNode.firstChild);
+            }
+            myNode.innerHTML = "";
             var parent = this.charts[i].domElement.parentElement;
             parent.removeChild(this.charts[i].domElement);
-            this.domElement = null;
+            this.charts[i].domElement = null;
+
             parent.appendChild(this.charts[i].build());
         }
     }
@@ -476,22 +482,28 @@ AFRAMEDC.BasicChart.prototype.addEvents = function () {
     }
     var partEventsLeave = function (el) {
         returnMeshColor(el);
+        detachInfo(el);
     };
     var returnMeshColor = function (el) {
         var partelement = el;
-        var meshEl = partelement.DOMElement.getObject3D('mesh');
-        meshEl.material.emissive.setHex(partelement.currentHex);
-
-        partelement.DOMElement.setObject3D('mesh', meshEl);
-    }
+        //modo THREEDC
+        //var meshEl = partelement.DOMElement.getObject3D('mesh');
+        //meshEl.material.emissive.setHex(partelement.currentHex);
+        //partelement.DOMElement.setObject3D('mesh', meshEl);
+        partelement.DOMElement.setAttribute('color', el.origin_color);
+    };
+    var detachInfo = function (el) {
+        var chartelement = el.DOMElement.parentElement;
+        var texttodelete = chartelement.querySelector("#tooltip");
+        if (texttodelete) {
+            chartelement.removeChild(texttodelete);
+        }
+    };
     var showInfo = function (basicChart, el) {
         var texto;
-        texto = document.querySelector('#tooltip');
-        if (!texto) {
-            texto = document.createElement("a-entity");
-        } else {
-            texto.parentElement.removeChild(texto);
-        }
+        
+        texto = document.createElement("a-entity");
+        
         var dark = 0x0A0A0A * 0x02;
         var darkercolor = Number.parseInt(el.origin_color.replace("#","0x")) - (0xA0A0A * 0x02);
         darkercolor ="#" + ("000000" + darkercolor.toString(16)).slice(-6)
@@ -503,22 +515,23 @@ AFRAMEDC.BasicChart.prototype.addEvents = function () {
             width: TEXT_WIDTH,
             wrapCount: 30
         });
-        texto.setAttribute('id', 'tooltip');
-        var labelpos = { x: el.position.x + TEXT_WIDTH / 2, y: el.position.y , z: el.position.z };
         
+        var labelpos = { x: el.position.x + TEXT_WIDTH / 2, y: el.position.y , z: el.position.z };
+        texto.id ="tooltip";
         texto.setAttribute('position', labelpos);
         //texto.setAttribute('geometry',{primitive: 'plane', width: 'auto', height: 'auto'});
         //basicChart.getEscene().appendChild(texto);
         el.DOMElement.parentElement.appendChild(texto);
     }
     var changeMeshColor = function (el) {
-        //this - partElement
         var partelement = el;
-        var meshEl = partelement.DOMElement.getObject3D('mesh');
-        var threeCol = new THREE.Color(partelement.origin_color);
-        partelement.currentHex = meshEl.material.emissive.getHex();
-        meshEl.material.emissive.setHex(threeCol.getHex());
-        partelement.DOMElement.setObject3D('mesh', meshEl);
+        var originColor = partelement.DOMElement.getObject3D('mesh').material.color.getHex();
+        //modo THREEDC
+        //partelement.currentHex = meshEl.material.emissive.getHex();
+        //meshEl.material.emissive.setHex(threeCol.getHex());
+        //partelement.DOMElement.setObject3D('mesh', meshEl);
+        var myColor = 0xFFFFFF ^ originColor;
+        partelement.DOMElement.setAttribute('color', "#" + ("000000" + myColor.toString(16)).slice(-6));
     }
     //events by default
     for (var i = 0; i < this.parts.length; i++) {

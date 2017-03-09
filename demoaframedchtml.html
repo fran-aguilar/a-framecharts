@@ -1,0 +1,27 @@
+<html>
+<head>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="js/aframe-grid.js"></script>
+    <script src="js/barchart.js"></script>
+    <script src="js/aframedc.js"></script>
+    <title>aframedc: demo existing chart in the scene</title>
+</head>
+<body>
+    <script>
+
+    </script>
+    <a-scene inspector>
+        <a-sky color="#D8D8D8"></a-sky>
+        <a-entity id="test" barchart="grids:true;xlabels:5;ylabels:5;width:10;height:4;color:red" position="5 -5 -1"></a-entity>
+
+        <a-entity camera position="0 2 12.31" rotation="-6.07 -1.72 0" wasd-controls look-controls></a-entity>
+    </a-scene>
+    <script>
+        //inyecting data to an existing chart..
+        var testChart = aframedc.barChart(document.querySelector('#test'));
+        testChart.data([{ key: 'b', value: 45 }, { key: 'c', value: 10 }]);
+        testChart.render();
+
+    </script>
+</body>
+</html>

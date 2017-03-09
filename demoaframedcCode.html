@@ -1,0 +1,37 @@
+<html>
+<head>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="js/aframe-grid.js"></script>
+    <script src="js/barchart.js"></script>
+    <script src="js/aframedc.js"></script>
+    <title>aframedc adding a chart via JS code</title>
+</head>
+<body>
+    <script>
+
+    </script>
+    <a-scene inspector>
+        <a-sky color="#D8D8D8"></a-sky>
+        <a-entity camera   wasd-controls look-controls position="0 2 12.31" rotation="-6.07 -1.72 0"></a-entity>
+    </a-scene>
+    <script>
+ 
+        //initiating chart by code
+        var scene = document.querySelector('a-scene');
+        dhb = aframedc.dashBoard(null, scene); //creating a new dashboard from scene.
+        //a simple bar chart
+        var barchart = aframedc.barChart()
+            .color('blue')
+            .height(5)
+            .depth(2)
+            .data([{ key: 'a', value: 35 }, { key: 'b', value: 45 }, { key: 'c', value: 10 }]);
+        //attach the chart to the dashboard.
+        dhb.addChart(barchart); 
+        barchart.setAttribute('position', { x: 5, y: -5, z: -1 });
+        //send all the charts to the scene, or force update all.
+        aframedc.renderAll();
+        
+
+    </script>
+</body>
+</html>
