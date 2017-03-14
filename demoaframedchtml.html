@@ -3,25 +3,33 @@
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
     <script src="js/aframe-grid.js"></script>
     <script src="js/barchart.js"></script>
+    <script src="js/piechart.js"></script>
+    <script src="js/title.js"></script>
     <script src="js/aframedc.js"></script>
     <title>aframedc: demo existing chart in the scene</title>
 </head>
 <body>
-    <script>
 
-    </script>
     <a-scene inspector>
-        <a-sky color="#D8D8D8"></a-sky>
-        <a-entity id="test" barchart="grids:true;xlabels:5;ylabels:5;width:10;height:4;color:red" position="5 -5 -1"></a-entity>
+        <a-sky color="#BDBDBD"></a-sky>
+        <a-entity id="test" barchart="grids:true;xlabels:5;ylabels:5;width:10;height:4;depth:2;color:red" position="5 0 -1" title="caption:Example Bar Chart;width:10;up:4;left:5"></a-entity>
+        <a-entity id="testpie" piechart="grids:true;xlabels:5;ylabels:5;width:10;height:4;color:red" title="caption:Example Pie Chart;width:10;up:4;left:2" position="16 0 -1" ></a-entity>
+        <a-entity camera position="0 4 12.31" rotation="-6.07 -1.72 0" wasd-controls look-controls></a-entity>
+        <a-circle rotation="-90 0 0" radius="20" color="#fff"
+                  transparent opacity="0.5"></a-circle>
 
-        <a-entity camera position="0 2 12.31" rotation="-6.07 -1.72 0" wasd-controls look-controls></a-entity>
+        <a-entity light="color:#BBB;type:ambient"     position="0 0 0" rotation="0 0 0" scale="1 1 1"  ></a-entity>
+        <a-entity light="color:#FFF;intensity:0.6" position="12.56 2.23 -4.81"  rotation="0 0 0" scale="1 1 1"  ></a-entity>
+        <a-entity light="color:#FFF;intensity:0.1" position="-6.52 2.67 -4" rotation="0 0 0" scale="1 1 1" ></a-entity>
     </a-scene>
     <script>
         //inyecting data to an existing chart..
         var testChart = aframedc.barChart(document.querySelector('#test'));
-        testChart.data([{ key: 'b', value: 45 }, { key: 'c', value: 10 }]);
+        testChart.data([{ key: 'b', value: 45 }, { key: 'c', value: 10 }, { key: 'c', value: 10 }, { key: 'c', value: 15 }, { key: 'c', value: 55 }, { key: 'c', value: 61 }]);
         testChart.render();
-
+        var test2 = aframedc.pieChart(document.querySelector('#testpie'));
+        test2.data([{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 }, { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }]);
+        test2.render();
     </script>
 </body>
 </html>

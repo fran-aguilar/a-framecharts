@@ -61,6 +61,27 @@
             };
             return _chart;
         };
+
+        aframedc.pieChart = function (_chart, cName) {
+
+            _chart = aframedc.baseMixin(_chart, cName || "piechart");
+            _chart.render = function () {
+                if (_chart._data && _chart._data.length > 0) {
+                    if (_chart._parentDashBoard) {
+                        //search for a-frame scene.
+                        if (!_chart.sceneEl) {
+                            _chart._parentDashBoard.sceneEl.appendChild(_chart);
+                        } else {
+                            _chart.emit('data-loaded');
+                        }
+                    } else if (_chart.sceneEl) {
+                        _chart.emit('data-loaded');
+                    }
+                }
+                return _chart;
+            };
+            return _chart;
+        };
         aframedc.dashBoard = function (dhbElement, scene) {
             if (!scene || !scene instanceof HTMLElement) x.p.l.o.d.e;
             var _dhbElement = dhbElement;

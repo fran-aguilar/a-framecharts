@@ -9,7 +9,7 @@
         color: { default: '#000000' }
     },
     onDataLoaded: function (evt) {
-        console.log('Data Loaded!');
+        console.log(this.name +":Data Loaded!");
         this.reload = this.loaded;
         evt.target.components[this.name].update(this.data);
     },
