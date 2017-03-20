@@ -1,10 +1,6 @@
 ﻿AFRAME.registerComponent('piechart', {
     schema: {
-        grids: { default: false },
-        xlabels: { default: 5 },
-        ylabels: { default: 5 },
-        width: { default: 10 },
-        height: { default: 10 },
+        radius: {default: 2.5 },
         depth: { default: 0.5 },
         color: {default: "#fff"}
     },
@@ -14,11 +10,23 @@
         evt.target.components[this.name].update(this.data);
     },
     init: function () {
+        var thatel = this.el;
+
         var cName = this.name;
-        var that = this;
         this.loaded = false;
         this.el.addEventListener('data-loaded', this.onDataLoaded.bind(this));
-
+        var chartdata = function (newdata) {
+            thatel._data = newdata;
+            //if (_chart.emit) {
+            //    _chart.emit('data-loaded');
+            //}
+            return thatel;
+        };
+        var render = function () {
+            thatel.emit('data-loaded');
+        };
+        thatel.data = chartdata;
+        thatel.render = render;
     },
     update: function (oldData) {
         if (this.el._data && this.el._data.length > 0) {
@@ -56,7 +64,7 @@
         var relativeX, relativeY, relativeZ;
         var thethainit = 0;
         var COLORS = ['#2338D9', '#23A2D9', '#23D978', '#BAD923', '#D923D3', '#23D7D7', '#D72323', '#262C07'];
-        var radius = Math.min(component.width / 2, component.height / 2);
+        var radius = component.radius;
         relativeX = radius;
         relativeY = radius;
         var _data;
@@ -98,24 +106,6 @@
             entityEl.appendChild(el);
         }
     },
-    addGrid: function(entityEl) {
-        var gridEntity = document.createElement('a-entity');
-        gridEntity.setAttribute('aframe-grid', {
-            height: this.data.height,
-            width: this.data.width,
-            nylabels: this.data.ylabels,
-            nxlabels: this.data.xlabels
-        });
-        entityEl.appendChild(gridEntity);
-    },
-    getAnimationColor: function (colorTo, colorFrom) {
-        var animation = document.createElement('a-animation');
-        animation.setAttribute("attribute", "color");
-        //animation.setAttribute("begin","ccolor");
-        animation.setAttribute("to", colorTo);
-        animation.setAttribute("from", colorFrom);
-        return animation;
-    },
     remove: function () {
         while (this.el.firstChild) {
             this.el.removeChild(this.el.firstChild);
@@ -123,5 +113,6 @@
         this.el.innerHTML = "";
         this.el.removeEventListener('data-loaded', this.onDataLoaded.bind(this));
 
-    }
+    },
+    
 });
