@@ -1,0 +1,60 @@
+﻿<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js" integrity="sha256-/n5MT3llJIpnhzW4ogf1UKsklcR3HxQO3mMznBFvUaY=" crossorigin="anonymous"></script>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <title>threejs vs a-frame</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="containerthree" style="float: left; width: 50%;">
+
+    </div>
+    <div id="aframe" style="float: left; width: 50%;">
+        <a-scene embedded>
+            <a-box color="green" rotation="45 0 0"></a-box>
+            <a-entity camera position="0 0 5"></a-entity>
+        </a-scene>
+    </div>
+    <script>
+        var threediv = document.getElementById("containerthree");
+        
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera(80, 640 / 633, 0.1, 1000);
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(640, 633);
+			renderer.setClearColor(0xFFFFFF);
+			document.getElementById("containerthree").appendChild( renderer.domElement );
+
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshStandardMaterial();
+			material.color.set(0x00ff00);
+			var cube = new THREE.Mesh(geometry, material);
+			geometry.rotateX( Math.PI / 4);
+			scene.add( cube );
+			var light = new THREE.AmbientLight(0xBBBBBB); // soft white light
+			scene.add(light);
+			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+			directionalLight.position.set(-0.50, 1, 1);
+			scene.add(directionalLight);
+			camera.position.z = 5;
+
+			var render = function () {
+				requestAnimationFrame( render );
+
+				//cube.rotation.x += 0.1;
+				//cube.rotation.y += 0.1;
+
+				renderer.render(scene, camera);
+			};
+
+			render();
+    </script>
+</body>
+</html>

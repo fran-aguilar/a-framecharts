@@ -4,6 +4,7 @@
     <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
     <script src="js/piechart.js"></script>
     <script src="js/demo1-html.js"></script>
+    <script src="js/custom-lookcontrols.js"></script>
     <title>Demo existing chart in the scene</title>
 
 </head>
@@ -12,7 +13,8 @@
         <div style="float: left; width: 10%;background-color: red"><p>1</p><p>1</p><p>1</p></div>
         <div style="float: left; width: 80%;background-color: blue" id="testaframe">
             <a-scene embedded>
-                    <a-entity id="testpie" piechart="radius:4"></a-entity>
+                <a-entity camera custom-lookcontrols wasd-controls mouse-cursor position="0 5 12.31" rotation="-6.07 -1.72 0"></a-entity>
+                    <a-entity id="testpie" piechart="radius:7"></a-entity>
             </a-scene>
         </div>
         <div style="float: left; width: 10%;background-color: deepskyblue"><p>1</p><p>1</p><p>1</p></div>
