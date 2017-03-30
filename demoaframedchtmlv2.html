@@ -1,6 +1,7 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
     <script src="js/piechart.js"></script>
     <script src="js/demo1-htmlv2.js"></script>
     <title>Demo existing chart in the scene</title>
@@ -8,6 +9,7 @@
 <body>
 
     <a-scene >
+        <a-entity camera  wasd-controls look-controls mouse-cursor ></a-entity>
         <a-piechart id="testpie" radius="4"></a-piechart>
     </a-scene>
   
