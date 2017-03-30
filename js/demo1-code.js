@@ -9,3 +9,7 @@ window.onload = function () {
     mydashboard = mydashboard.addChart(mypieChart);
     mydashboard.renderAll();
 };
+//if you want to see update.
+//var pie = mydashboard.chartRegistry.list()[0];
+//pie.data([{ key: "abc", value: 42 }, { key: "aaa", value: 24 }]);
+//pie.render();

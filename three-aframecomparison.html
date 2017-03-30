@@ -12,23 +12,29 @@
     </style>
 </head>
 <body>
-    <div id="containerthree" style="float: left; width: 50%;">
+    <div id="" style="float: left; width: 50%;">
+        <h1>THREE</h1>
+        <div id="containerthree" style="height:400px; width:400px">
 
+        </div>
     </div>
-    <div id="aframe" style="float: left; width: 50%;">
+    <div  style="float: left; width: 50%;">
+        <h1>aframe</h1>
+        <div id="aframe" style="height:400px; width:400px">
         <a-scene embedded>
             <a-box color="green" rotation="45 0 0"></a-box>
             <a-entity camera position="0 0 5"></a-entity>
         </a-scene>
+            </div>
     </div>
     <script>
         var threediv = document.getElementById("containerthree");
         
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera(80, 640 / 633, 0.1, 1000);
+			var camera = new THREE.PerspectiveCamera(80, 400/400, 0.1, 1000);
 
 			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize(640, 633);
+			renderer.setSize(400 , 400);
 			renderer.setClearColor(0xFFFFFF);
 			document.getElementById("containerthree").appendChild( renderer.domElement );
 

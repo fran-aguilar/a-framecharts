@@ -63,7 +63,14 @@
             var opieChart = {
                 _domEl: element,
                 render: function () {
-                    this._domEl.emit('data-loaded');
+                    if (this._domEl.isPlaying) {
+                        this._domEl.emit('data-loaded');
+                    } else {
+                        var thatel = this._domEl;
+                        this._domEl.addEventListener('loaded', function (ev) {
+                            thatel.emit('data-loaded');
+                        });
+                    }
                     return this;
                 },
                 data: function (newdata) {
