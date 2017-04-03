@@ -1,0 +1,19 @@
+<html>
+<head>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
+    <script src="js/piechart.js"></script>
+    <script src="js/demoaframe.js"></script>
+    <script src="js/custom-lookcontrols.js"></script>
+    <title>Demo existing chart in the scene</title>
+
+</head>
+<body>
+    <div id="dashboard">
+        <a-scene embedded>
+            <a-entity camera custom-lookcontrols wasd-controls mouse-cursor position="0 5 12.31" rotation="-6.07 -1.72 0"></a-entity>
+            <a-entity id="pie" piechart="radius:7"></a-entity>
+        </a-scene>
+    </div>
+</body>
+</html>

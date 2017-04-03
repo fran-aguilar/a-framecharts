@@ -27,6 +27,10 @@
         };
         //thatel.data = chartdata;
         //thatel.render = render;
+    }, 
+    data: function(newdata){
+        this.el._data = newdata;
+        return this;
     },
     update: function (oldData) {
         if (this.el._data && this.el._data.length > 0) {
