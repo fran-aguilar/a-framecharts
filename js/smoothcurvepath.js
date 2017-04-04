@@ -11,7 +11,7 @@
                 }
                 return value.split(',').map(AFRAME.utils.coordinates.parse);
             }
-
+            //it doesn't work properly
             // Serialize array of vec3s in case someone does setAttribute('line', 'path', [...]).
             //stringify: function (data) {
             //    return data.map(coordinates.stringify).join(',');

@@ -86,13 +86,6 @@
             el.setAttribute("theta-start", thethainit);
             el.setAttribute("theta-length", myThethaLength);
             el.setAttribute("radius", radius);
-            
-
-           
-
-
-            //setting label
-            //no ne de mom..
             var angleLabel = (thethainit + (myThethaLength / 2));
             //to rads
             angleLabel = (angleLabel * 2 * Math.PI) / 360;

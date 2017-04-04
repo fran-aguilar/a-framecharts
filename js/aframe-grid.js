@@ -3,8 +3,8 @@ AFRAME.registerComponent('aframe-grid', {
     schema: {
         height: { default: 1 },
         width: { default: 1 },
-        nylabels: { default: 4 },
-        nxlabels: { default: 4 }
+        ysteps: { default: 4 },
+        xsteps: { default: 4 }
     },
 
     update: function () {
@@ -14,18 +14,18 @@ AFRAME.registerComponent('aframe-grid', {
             linewidth: 1
         });
 
-        var stepY = data.height / data.nylabels;
+        var stepY = data.height / data.ysteps;
 
         var grids = new THREE.Object3D();
-        for (var i = 0; i < data.nylabels + 1; i++) {
+        for (var i = 0; i < data.ysteps + 1; i++) {
             grids.add(putYGrid(i * stepY));
         };
 
 
-        var stepX = data.width / data.nxlabels;
+        var stepX = data.width / data.xsteps;
 
 
-        for (var i = 0; i < data.nxlabels + 1; i++) {
+        for (var i = 0; i < data.xsteps + 1; i++) {
             grids.add(putXGrid(i * stepX));
         };
 

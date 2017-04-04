@@ -1,4 +1,4 @@
-﻿AFRAME.registerComponent('barchart', {
+﻿AFRAME.registerComponent('smoothcurvechart', {
     schema: {
         gridson: { default: true },
         xsteps: { default: 5 },
@@ -41,6 +41,9 @@
     initChart: function () {
         var eElem = this.el;
         var componentData = this.data;
+
+        var eElem = this.el;
+        var componentData = this.data;
         if ((!eElem._data || eElem._data.length === 0) &&
            !eElem._group) return;
         var __calculateY = function (initialY, height) {
@@ -63,65 +66,59 @@
             _data = eElem.sortCFData();
         }
         var dataValues = _data.map(function (a) { return a.value; });;
-        dataValues = scale.apply(null, dataValues);
-        BAR_WIDTH = componentData.width / dataValues.length;;
-        BAR_DEPTH = componentData.depth;
-        MAX_HEIGHT = componentData.height;
+
         COLORS = ['#2338D9', '#23A2D9', '#23D978', '#BAD923', '#D923D3'];
-        var entityEl = document.createElement('a-entity');
         var yMaxPoint = 0;
+        dataValues = scale.apply(null, dataValues);
 
-        var relativeX, relativeY, relativeZ;
-        relativeX = BAR_WIDTH / 2;
-        relativeY = 0;
-        relativeZ = componentData.depth / 2;
-
+        var step = componentData.width / dataValues.length;
+        var x = 0;
+        var material = new THREE.LineBasicMaterial({
+            color: this.data.color
+        });
+        var curve, vertices = [];
+       
+        
         for (var i = 0; i < dataValues.length; i++) {
-            var myHeight = dataValues[i] * MAX_HEIGHT;
-            var myYPosition = __calculateY(relativeY, myHeight);
-            var el = document.createElement('a-box');
-            var actualColor = componentData.color || COLORS[i % COLORS.length];
-            var elPos = { x: relativeX, y: myYPosition, z: relativeZ };
-
-            el.setAttribute('width', BAR_WIDTH);
-            el.setAttribute('height', myHeight);
-            el.setAttribute('depth', BAR_DEPTH);
-            el.setAttribute('color', actualColor);
-            el.setAttribute('position', elPos);
-            relativeX += BAR_WIDTH;
-
+            var box = document.createElement('a-sphere');
+        //box.setAttribute('width', 0.4);
+        //box.setAttribute('height', 0.4);
+            //box.setAttribute('depth', 0.4);
+            box.setAttribute('radius', 0.2);
+        box.setAttribute("color", componentData.color);
+            vertices.push(
+             new THREE.Vector3(x, (componentData.height * dataValues[i]), 0)
+           );
+            box.setAttribute("position", { x: x, y: (componentData.height * dataValues[i]), z: 0.2 });
+            eElem.appendChild(box);
             //storing parts info..
-            var barPart = {
+            var boxPart = {
                 name: "key:" + _data[i].key + " value:" + _data[i].value,
                 data: {
                     key: _data[i].key,
                     value: _data[i].value
                 },
-                position: { x: elPos.x, y: relativeY + MAX_HEIGHT + 0.25, z: elPos.z },
-                origin_color: actualColor
+                position: { x: x, y: componentData.height + 0.25, z: 0},
+                origin_color: componentData.color
             };
-            el._partData = barPart;
-            //getting max.
-            eElem.appendChild(el);
-        }
+            box._partData = boxPart;
+
+            x += step;
+            
+            
+        };
+
+        curve = new THREE.CatmullRomCurve3(vertices);
+
+        var geometry = new THREE.Geometry();
+        geometry.vertices = curve.getPoints(512);
+        var curveObject = new THREE.Line(geometry, material);
+        eElem.setObject3D('mesh', curveObject);
         this.addEvents();
-        //var entLabels = this.addLabels();
-        //for (var lb = 0 ; lb < entLabels.length; lb++) {
-        //    entityEl.appendChild(entLabels[lb]);
-        //}
         if (componentData.gridson) {
             this.addGrid();
         }
-    },
-    addGrid: function (entityEl) {
-        var gridEntity = document.createElement('a-entity');
-        gridEntity.setAttribute('aframe-grid', {
-            height: this.data.height,
-            width: this.data.width,
-            ysteps: this.data.ysteps,
-            xsteps: this.data.xsteps
-        });
-        this.el.appendChild(gridEntity);
+
     },
     addEvents: function () {
         var addEvent = function (basicChart, partElement) {
@@ -154,9 +151,7 @@
         var showInfo = function (basicChart, el) {
             var texto;
             texto = document.createElement("a-entity");
-            var dark = 0x0A0A0A * 0x02;
-            var darkercolor = Number.parseInt(el._partData.origin_color.replace("#", "0x")) - (0xA0A0A * 0x02);
-            darkercolor = "#" + ("000000" + darkercolor.toString(16)).slice(-6)
+
             var TEXT_WIDTH = 6;
             texto.setAttribute("text", {
                 color: "#000000",
@@ -176,11 +171,8 @@
         var changeMeshColor = function (el) {
             var partelement = el;
             var originColor = partelement.getObject3D('mesh').material.color.getHex();
-            //modo THREEDC
-            //partelement.currentHex = meshEl.material.emissive.getHex();
-            //meshEl.material.emissive.setHex(threeCol.getHex());
-            //partelement.DOMElement.setObject3D('mesh', meshEl);
-            var myColor = 0xFFFFFF ^ originColor;
+            //always red
+            var myColor = 0xFF0000 ;
             partelement.setAttribute('color', "#" + ("000000" + myColor.toString(16)).slice(-6));
         }
         //events by default
@@ -188,6 +180,15 @@
                 addEvent(this.el, this.el.children[i]);
         };
 
+    }, addGrid: function (entityEl) {
+        var gridEntity = document.createElement('a-entity');
+        gridEntity.setAttribute('aframe-grid', {
+            height: this.data.height,
+            width: this.data.width,
+            ysteps: this.data.ysteps,
+            xsteps: this.data.xsteps
+        });
+        this.el.appendChild(gridEntity);
     },
     remove: function () {
         while (this.el.firstChild) {
