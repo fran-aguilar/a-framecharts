@@ -33,7 +33,7 @@
         return this;
     },
     update: function (oldData) {
-        if (this.el._data && this.el._data.length > 0) {
+        if ((this.el._data && this.el._data.length > 0)||this.el._group) {
             if (this.reload) {
                 //rebuild the chart.
                 while (this.el.firstChild) {
@@ -95,7 +95,7 @@
             el.setAttribute("color", actualColor);
             //el.setAttribute("material", { color: actualColor });
             el.setAttribute("scale", { x: 1, y: component.depth, z: 1 });
-            el.setAttribute("position", { x: relativeX, y: relativeY, z: relativeZ });
+            el.setAttribute("position", { x: relativeX, y: relativeY, z: 0 });
             el.setAttribute("rotation", { x: -90, y: 0, z: 0 });
 
             thethainit = thethainit + myThethaLength;
@@ -111,7 +111,23 @@
             };
             el._partData = piePart;
             entityEl.appendChild(el);
-            
+            var myFunc = function (chart, element) {
+
+                if (chart.el._dimension) {
+                    var myDim = chart.el._dimension;
+                    myDim.filterAll(null);
+                    myDim = myDim.filter(element.data.key);
+                    //llamada a redibujado de todo..
+                    var childs = chart.el.parentElement.children;
+                    for (var ch = 0 ; ch < childs.length ; ch++) {
+                        if (childs[ch] !== chart.el && childs[ch]._group) {
+                            childs[ch].emit("data-loaded");
+                        }
+                    }
+                }
+            };
+            var myBindFunc = myFunc.bind(null, this, el._partData);
+            el.addEventListener("click", myBindFunc);
         }
         this.addEvents();
     },

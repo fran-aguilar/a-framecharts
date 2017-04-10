@@ -17,6 +17,13 @@ window.onload = function () {
     var mypieChart = aframedc.pieChart()
             .data([{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 }, { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }])
             .depth(3);
-    // Example 1
-    dashboard.addChart(mypieChart);
+    var mypieChart2 = aframedc.pieChart()
+        .data([{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 }, { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }])
+        .depth(3);
+    // Example 2
+    window.mypanel = aframedc.Panel();
+    mypanel.addChart(mypieChart);
+    mypanel.addChart(mypieChart2);
+    dashboard.addPanel(mypanel);
+
 };

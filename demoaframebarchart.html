@@ -4,14 +4,14 @@
     <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
     <script src="js/aframe-grid.js"></script>
     <script src="js/barchart.js"></script>
-    <script src="js/demoaframesmoothcurve.js"></script>
+    <script src="js/demoaframebarchart.js"></script>
     <title>Demo existing chart in the scene</title>
 </head>
 <body>
     <div id="dashboard">
         <a-scene embedded>
-            <a-entity camera wasd-controls look-controls mouse-cursor></a-entity>
-            <a-entity id="bars" barchart="width:14;gridsOn:true"></a-entity>
+            <a-entity camera wasd-controls look-controls mouse-cursor position="0 1 0"></a-entity>
+            <a-entity id="bars" barchart="width:14;gridson:true"></a-entity>
         </a-scene>
     </div>
 </body>

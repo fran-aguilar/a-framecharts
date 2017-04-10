@@ -77,20 +77,20 @@
             color: this.data.color
         });
         var curve, vertices = [];
-       
-        
+
+
         for (var i = 0; i < dataValues.length; i++) {
-            var box = document.createElement('a-sphere');
-        //box.setAttribute('width', 0.4);
-        //box.setAttribute('height', 0.4);
-            //box.setAttribute('depth', 0.4);
-            box.setAttribute('radius', 0.2);
-        box.setAttribute("color", componentData.color);
+            var point = document.createElement('a-sphere');
+            //point.setAttribute('width', 0.4);
+            //point.setAttribute('height', 0.4);
+            //point.setAttribute('depth', 0.4);
+            point.setAttribute('radius', 0.2);
+            point.setAttribute("color", componentData.color);
             vertices.push(
              new THREE.Vector3(x, (componentData.height * dataValues[i]), 0)
            );
-            box.setAttribute("position", { x: x, y: (componentData.height * dataValues[i]), z: 0.2 });
-            eElem.appendChild(box);
+            point.setAttribute("position", { x: x, y: (componentData.height * dataValues[i]), z: 0.2 });
+            eElem.appendChild(point);
             //storing parts info..
             var boxPart = {
                 name: "key:" + _data[i].key + " value:" + _data[i].value,
@@ -98,14 +98,14 @@
                     key: _data[i].key,
                     value: _data[i].value
                 },
-                position: { x: x, y: componentData.height + 0.25, z: 0},
+                position: { x: x, y: componentData.height + 0.25, z: 0 },
                 origin_color: componentData.color
             };
-            box._partData = boxPart;
+            point._partData = boxPart;
 
             x += step;
-            
-            
+
+
         };
 
         curve = new THREE.CatmullRomCurve3(vertices);
@@ -172,12 +172,12 @@
             var partelement = el;
             var originColor = partelement.getObject3D('mesh').material.color.getHex();
             //always red
-            var myColor = 0xFF0000 ;
+            var myColor = 0xFF0000;
             partelement.setAttribute('color', "#" + ("000000" + myColor.toString(16)).slice(-6));
         }
         //events by default
         for (var i = 0; i < this.el.children.length; i++) {
-                addEvent(this.el, this.el.children[i]);
+            addEvent(this.el, this.el.children[i]);
         };
 
     }, addGrid: function (entityEl) {

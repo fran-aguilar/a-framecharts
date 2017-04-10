@@ -22,7 +22,7 @@
 
     },
     update: function (oldData) {
-        if (this.el._data && this.el._data.length > 0) {
+        if ( (this.el._data && this.el._data.length > 0) ||this.el._group ) {
             if (this.reload) {
                 //rebuild the chart.
                 while (this.el.firstChild) {
@@ -56,11 +56,38 @@
             }
             return p;
         };
+        var sortCFData = function () {
+            var unsort_data = eElem._group.top(Infinity);
+
+            var dates = [];
+            //en dates guardo las fechas(keys)
+            for (var i = 0; i < unsort_data.length; i++) {
+                dates[i] = unsort_data[i].key;
+            };
+            //ordeno fechas(keys) de menor a mayor
+            dates.sort(function (a, b) { return a - b });
+
+            //ordeno el grupo de menor a mayor usando
+            //las posiciones de dates
+            var _data = [];
+            for (var i = 0; i < dates.length; i++) {
+                for (var j = 0; j < unsort_data.length; j++) {
+                    if (dates[i] === unsort_data[j].key) {
+                        _data[i] = {
+                            key: unsort_data[j].key,
+                            value: unsort_data[j].value
+                        };
+                    }
+                };
+            };
+
+            return _data;
+        };
         var _data;
         if (eElem._data && eElem._data.length > 0) {
             _data = eElem._data;
         } else if (eElem._group) {
-            _data = eElem.sortCFData();
+            _data = sortCFData();
         }
         var dataValues = _data.map(function (a) { return a.value; });;
         dataValues = scale.apply(null, dataValues);
@@ -81,7 +108,7 @@
             var myYPosition = __calculateY(relativeY, myHeight);
             var el = document.createElement('a-box');
             var actualColor = componentData.color || COLORS[i % COLORS.length];
-            var elPos = { x: relativeX, y: myYPosition, z: relativeZ };
+            var elPos = { x: relativeX, y: myYPosition, z: 0 };
 
             el.setAttribute('width', BAR_WIDTH);
             el.setAttribute('height', myHeight);
@@ -97,7 +124,7 @@
                     key: _data[i].key,
                     value: _data[i].value
                 },
-                position: { x: elPos.x, y: relativeY + MAX_HEIGHT + 0.25, z: elPos.z },
+                position: { x: elPos.x, y: relativeY + MAX_HEIGHT + 0.25, z: elPos.z + relativeZ },
                 origin_color: actualColor
             };
             el._partData = barPart;
@@ -105,10 +132,10 @@
             eElem.appendChild(el);
         }
         this.addEvents();
-        //var entLabels = this.addLabels();
-        //for (var lb = 0 ; lb < entLabels.length; lb++) {
-        //    entityEl.appendChild(entLabels[lb]);
-        //}
+        var entLabels = this.addYLabels();
+        for (var lb = 0 ; lb < entLabels.length; lb++) {
+            eElem.appendChild(entLabels[lb]);
+        }
         if (componentData.gridson) {
             this.addGrid();
         }
@@ -121,6 +148,7 @@
             ysteps: this.data.ysteps,
             xsteps: this.data.xsteps
         });
+        gridEntity.setAttribute("position", { x: 0, y: 0, z: -this.data.depth / 2 });
         this.el.appendChild(gridEntity);
     },
     addEvents: function () {
@@ -188,6 +216,53 @@
                 addEvent(this.el, this.el.children[i]);
         };
 
+    },
+    addYLabels : function () {
+        var numberOfValues;
+        var topYValue;
+        var getYLabel = function(component, step, value) {
+
+            var txt = value;
+            var curveSeg = 3;
+            var texto = document.createElement("a-entity");
+            TEXT_WIDTH = 6;
+            //FIXME: depende del tamaño de letra...
+            var xPos =     -0.7;
+            //var yPos = BasicChart._coords.y + step +  0.36778332145402703 / 2;
+            var yPos =   step;
+            texto.setAttribute("text", {
+                color: "#000000",
+                side: "double",
+                value: value.toFixed(2),
+                width: TEXT_WIDTH,
+                wrapCount: 30,
+                align: "center"
+            });
+            //texto.setAttribute('geometry', { primitive: 'plane', width: 'auto', height: 'auto' });
+            // Positions the text and adds it to the THREEDC.scene
+            var labelpos = { x: xPos, y: yPos, z: -component.data.depth / 2 };
+            texto.setAttribute('position', labelpos); 
+            return texto;
+        } 
+        var _data;
+        if (this.el._data) {
+            _data = this.el._data;
+        } else {
+            _data = this.el._group.top(Infinity);
+        }
+        var dataValues =  _data.map(function (a) { return a.value; });
+        topYValue = Math.max.apply(null, dataValues);
+        numberOfValues = dataValues.length;
+        //Y AXIS
+        //var numerOfYLabels=Math.round(_chart._height/20);
+        var stepYValue= topYValue/this.data.ysteps;
+        var stepY=this.data.height/this.data.ysteps;
+        var labels = [];
+        for (var i = 0; i <this.data.ysteps +1; i++) {
+            labels.push(getYLabel(this, i * stepY, i * stepYValue));
+        };
+        
+        return labels;
     },
     remove: function () {
         while (this.el.firstChild) {
