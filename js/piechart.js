@@ -2,7 +2,8 @@
     schema: {
         radius: {default: 2.5 },
         depth: { default: 0.5 },
-        color: {default: "#fff"}
+        color: { default: "#fff" },
+        title: {default: ""}
     },
     onDataLoaded: function (evt) {
         console.log(this.name +": Data Loaded!");
@@ -106,7 +107,7 @@
                     key: _data[j].key,
                     value: _data[j].value
                 },
-                position: { x: relativeX, y: relativeY + radius + 0.25, z:  component.depth },
+                position: { x: relativeX, y: relativeY + radius + 0.25, z:  component.depth /2 },
                 origin_color: actualColor
             };
             el._partData = piePart;
@@ -130,6 +131,9 @@
             el.addEventListener("click", myBindFunc);
         }
         this.addEvents();
+        if (component.title !== "") {
+            this.addTitle();
+        }
     },
     remove: function () {
         this.el.removeEventListener('data-loaded', this.onDataLoaded.bind(this));
@@ -138,6 +142,12 @@
         }
         this.el.innerHTML = "";
 
+    },
+    addTitle: function () {
+        var titleEntity = document.createElement("a-entity");
+        titleEntity.setAttribute("title", { caption: this.data.title });
+        titleEntity.setAttribute("position", { x: this.data.radius, y: (this.data.radius * 2) + 1, z: this.data.depth / 2 });
+        this.el.appendChild(titleEntity);
     },
     addEvents : function () {
         var addEvent = function (basicChart, partElement) {

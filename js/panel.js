@@ -2,7 +2,8 @@
     schema: {
         ncolumns: { default: 2, },
         nrows: { default: 1 },
-        margin: {default: 6}
+        margin: { default: 6 },
+        title: {default: ""}
     },
     onDataLoaded: function (evt) {
         console.log(this.name + ":Data Loaded!");
@@ -37,7 +38,7 @@
     },
     //private
     __childAttachedCallback: function(evt){
-        if (evt.detail.el.parentNode !== this) { return; }
+        if (evt.detail.el.parentNode !== this || evt.detail.el.id === "injectedTitle") { return; }
         this.components.panel.childrenItems.push(evt.detail.el);
         this.emit("data-loaded");
     },
@@ -78,8 +79,8 @@
                     {
                         retDim.z = compObj.data.depth;
                         if (knownCharts[i] === "piechart") {
-                            retDim.x = compObj.data.radius;
-                            retDim.y = compObj.data.radius;
+                            retDim.x = compObj.data.radius * 2;
+                            retDim.y = compObj.data.radius * 2;
                         } else {
                             retDim.x = compObj.data.width;
                             retDim.y = compObj.data.height;
@@ -94,15 +95,23 @@
             var i = 0;
             var rowStep = this.el.components["geometry"].data.height / this.data.nrows;
             var colStep = this.el.components["geometry"].data.width / this.data.ncolumns;
+            var nextColStep = 0,customcolstep =false;
             for (var r = 0 ; r < this.data.nrows ; r++) {
-                var rowpoint = (this.el.components["geometry"].data.height / 2) - ((r + 1) * rowStep);
+                var rowpoint = (-this.el.components["geometry"].data.height / 2) + ((r ) * rowStep);
                 for (c = 0; c < this.data.ncolumns; c++) {
                     var posPoint = { x: 0, y: rowpoint, z: 0 };
                     var rowpoint_mod = rowpoint;
-                    if (!children[i]) break;
-                    var child = children[i];
+                    if (!this.childrenItems[i]) break;
+                    var child = this.childrenItems[i];
                     var childdim = searchdimensions(child);
-                    var colpoint = (this.el.components["geometry"].data.width / 2) - ((c + 1) * colStep);
+                    var colpoint = (-this.el.components["geometry"].data.width / 2) + ((c) * colStep);
+                    colpoint = customcolstep ? nextColStep : colpoint;
+                    customcolstep = false;
+                    if (childdim.x) {
+                        //todo: delete that offset.
+                        nextColStep = colpoint + childdim.x + 1.3;
+                        customcolstep = true;
+                    } 
                     //en el caso de nuestras graficas seria correcto así
                     colpoint = colpoint  ;
                     rowpoint_mod = rowpoint ;
@@ -113,7 +122,7 @@
                     child.setAttribute("position", posPoint);
                     i++;
                 }
-                if (!children[i]) break;
+                if (!this.childrenItems[i]) break;
             }
             //for (var i = 0 ; i < numChildren; i++) {
                 
@@ -125,11 +134,27 @@
             //    initX = initX + defMargin;
             //}
         }
+        if (this.data.title !== "") {
+            this.addTitle();
+        }
+    },
+    addTitle: function () {
+        var titleEntity = document.querySelector("#injectedTitle");
+        var geomData = this.el.components["geometry"].data;
+        if (titleEntity) {
+            titleEntity.setAttribute("title", { caption: this.data.title, width: geomData ? geomData.width : 6 });
+            titleEntity.setAttribute("position", { x: 0, y: (geomData ? geomData.height/2 : 5) + 2, z: 0 });
+            return;
+        }
+        titleEntity = document.createElement("a-entity");
+        titleEntity.id = "injectedTitle";
+        titleEntity.setAttribute("title", { caption: this.data.title, width: geomData ? geomData.width : 6 });
+        titleEntity.setAttribute("position", { x: 0, y: (geomData ? geomData.height /2: 5) + 2, z: 0 });
+        this.el.appendChild(titleEntity);
     },
     /**
      * Reset positions.
      */
-
     remove: function () {
         this.el.removeEventListener('child-attached', this.__childAttachedCallback);
         this.el.removeEventListener('child-detached', this.__childdetachedCallback);

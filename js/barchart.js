@@ -6,7 +6,8 @@
         width: { default: 10 },
         height: { default: 10 },
         depth: { default: 0.5 },
-        color: { default: '#00FF00' }
+        color: { default: '#00FF00' },
+        title: {default: ""}
     },
     onDataLoaded: function (evt) {
         console.log(this.name + ":Data Loaded!");
@@ -139,6 +140,9 @@
         if (componentData.gridson) {
             this.addGrid();
         }
+        if (componentData.title !== "") {
+            this.addTitle();
+        }
     },
     addGrid: function (entityEl) {
         var gridEntity = document.createElement('a-entity');
@@ -150,6 +154,12 @@
         });
         gridEntity.setAttribute("position", { x: 0, y: 0, z: -this.data.depth / 2 });
         this.el.appendChild(gridEntity);
+    },
+    addTitle: function(){
+        var titleEntity = document.createElement("a-entity");
+        titleEntity.setAttribute("title", { caption: this.data.title });
+        titleEntity.setAttribute("position", { x: 0, y: this.data.height + 1, z: 0 });
+        this.el.appendChild(titleEntity);
     },
     addEvents: function () {
         var addEvent = function (basicChart, partElement) {

@@ -1,10 +1,34 @@
 ﻿(function () {
     function _aframedc() {
         var aframedc = {
-            version: '0.0.1',
+            version: '0.1.0',
             DEFAULT_CHART_GROUP: "__defaultgroup__"
         };
-        aframedc.dashBoard = function (scene) {
+
+        aframedc.addDashBoard = function (AFRAMEscene) {
+            //ensuring camera has mouse-cursor.
+            var canvas = AFRAMEscene.canvas;
+            var _ensuremousecursor = function (scene) {
+                var camera = scene.querySelector("[camera]");
+                if (!camera) {
+                    camera = createcamera();
+                    scene.appendChild(camera);
+                } else if (!camera.getAttribute("mouse-cursor")) {
+                    var _setcursor = function () { camera.setAttribute("mouse-cursor", "") };
+                    if (camera.hasLoaded) {
+                        _setcursor();
+                    }else{
+                        //camera object 3d has to be loaded.
+                        camera.addEventListener("loaded", _setcursor());
+                    }
+                }
+            }
+            if (!canvas) {
+                AFRAMEscene.addEventListener('render-target-loaded', _ensuremousecursor.bind(null, AFRAMEscene));
+            }
+            return dashBoard(AFRAMEscene);
+        }
+        var dashBoard = function (scene) {
             var dashEntity = document.createElement("a-entity");
             dashEntity.id = "aframedc";
             scene.appendChild(dashEntity);
@@ -37,21 +61,44 @@
             odashboard.addPanel = function (panel) {
                 this.chartRegistry.register(panel);
                 this.appendChild(panel);
-                var listOfCharts  = panel.chartRegistry.list();
+                var listOfCharts = panel.chartRegistry.list();
                 for (var i = 0; i < listOfCharts.length; i++) {
                     panel.appendChild(listOfCharts[i]);
                 }
                 panel.render();
                 return this;
             };
-            odashboard.addChart =function (chart) {
+            odashboard.addChart = function (chart,coords) {
                 this.chartRegistry.register(chart);
                 this.appendChild(chart);
+                if (coords) {
+                    chart.setAttribute("position", coords);
+                }
                 chart.render();
                 return this;
             };
 
             return odashboard;
+        };
+        var createcamera = function () {
+            //taking existing camera.Adding my custom components.
+            var camera = document.createElement("a-entity");
+            camera.setAttribute("camera", {});
+            camera.setAttribute("look-controls", {});
+            camera.setAttribute("wasd-controls", {});
+            //camera object 3d has to be loaded.
+            camera.addEventListener("loaded", function () { camera.setAttribute("mouse-cursor", "") });
+            return camera;
+        }
+        aframedc.dashboard = function (containerdiv) {
+            var scene = document.createElement("a-scene");
+            scene.setAttribute('embedded', {});
+            //creating camera 
+            var camera = createcamera();
+                
+            scene.appendChild(camera);
+            containerdiv.appendChild(scene);
+            return dashBoard(scene);
         }
         var baseMixin = {
             componentName: "", //filled on every chart
@@ -85,7 +132,12 @@
 
             },
             color: function (newcolor) {
-                this.setAttribute(this.componentName,"color", newcolor);
+                this.setAttribute(this.componentName, "color", newcolor);
+                return this;
+            },
+            setTitle: function (newTitle) {
+                this.setAttribute(this.componentName, "title", newTitle);
+                return this;
             }
         };
         aframedc.Panel = function () {
@@ -151,6 +203,10 @@
                 this.setAttribute(this.componentName, "ncolumns", newn);
                 return this;
             };
+            oPanel.setTitle = function (newtitle) {
+                this.setAttribute(this.componentName, "title", newtitle);
+                return this;
+            }
             //unique properties and methods
             oPanel.componentName = compName;
             oPanel.addChart = function (chart) {
