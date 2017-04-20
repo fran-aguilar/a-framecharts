@@ -6,7 +6,7 @@ window.onload = function () {
 
     // initialization
     //getJSON call, draw meshes with data
-    $.getJSON("/data/scm-commits.json", function (data) {
+    $.getJSON("../data/scm-commits.json", function (data) {
         var json_data = data;
         init(json_data);
     });
