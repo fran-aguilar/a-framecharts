@@ -53,7 +53,7 @@ window.onload = function () {
         mybarchart.dimension(dimByMonth).group(groupByMonth).width(30).setTitle("commits per month");
 
         var coordPieChart = { x: -9, y: 0, z: 0 };
-        var coordBarChart = {x:0, y:0, z:0 };
+        var coordBarChart = { x: 0, y: 0, z: 0 };
         myDashboard.addChart(mypiechart, coordPieChart);
         myDashboard.addChart(mybarchart, coordBarChart);
     }
