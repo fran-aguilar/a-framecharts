@@ -325,8 +325,9 @@ window.onload = function () {
         myDashboard.addChart(mystackchartOrgs, coordorgweekchart);
 
 
-
-        
+        var camera = document.querySelector("[camera]");
+        camera.setAttribute("position", { x: 20, y: 0, z: 20 });
+        camera.setAttribute("rotation", { x: -0.688, y: -4.240, z: 0 });
 
     }
 }
