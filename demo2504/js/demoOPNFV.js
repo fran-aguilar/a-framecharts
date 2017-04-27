@@ -107,7 +107,9 @@ window.onload = function () {
                     //remove that element.
                     p.splice(elementIndex, 1);
                 }
-            } 
+            }
+
+ 
             return p ;
         },
 
@@ -115,10 +117,68 @@ window.onload = function () {
             return [];
         });
         //
-        
+
+
+        window.grouporgWeekwithAuthors = dimByWeek.group().reduce(function reduceAdd(p, v) {
+            var findorg = function (element) {
+                if (!element.key) return false;
+                return element.key === v.Author_org_name;
+            };
+            var elementIndex = p.findIndex(findorg);
+            if (elementIndex === -1) {
+                //init
+                elementIndex = p.push({ key: v.Author_org_name, value: { counting: 0, commits: 1 } });
+                //index of added item.
+                elementIndex = elementIndex - 1;
+            } else {
+                p[elementIndex].value.commits = p[elementIndex].value.commits + 1;
+            }
+            if (!p[elementIndex].value.authors) {
+                p[elementIndex].value.authors = {};
+                p[elementIndex].value.authors[v.Author_name] = 1;
+                p[elementIndex].value.counting =  1;
+            } else if (!p[elementIndex].value.authors) {
+                p[elementIndex].value.authors[v.Author_name] = 1;
+                p[elementIndex].value.counting = p[elementIndex].value.counting+1;
+            }
+
+            return p;
+        },
+
+        function reduceRemove(p, v) {
+            var findorg = function (element) {
+                if (!element.key) return false;
+                return element.key === v.Author_org_name;
+            };
+            var elementIndex = p.findIndex(findorg);
+            if (elementIndex !== -1) {
+                p[elementIndex].value.commits = p[elementIndex].value.commits - 1;
+                if (p[elementIndex].value.commits <= 0) {
+                    //remove that element.
+                    p.splice(elementIndex, 1);
+                } else if (p[elementIndex].value.authors[v.Author_name]) {
+                        p[elementIndex].value.authors[v.Author_name] = (p[v.Author_name] || 0) - 1;
+                        delete p[elementIndex].value.authors[v.Author_name];
+                        p[elementIndex].value.counting = p[elementIndex].value.counting - 1;
+
+                }
+                
+            }
+
+            return p;
+        },
+
+        function reduceInitial() {
+            return [];
+        });
+        console.log("new grouping");
+        console.log(grouporgWeekwithAuthors.all());
         ////create a dimension by org
         var dimByOrg = cf.dimension(function (p) { return p.Author_org_name; });
         var groupByOrg = dimByOrg.group();
+        //create a dim by authors
+        var dimAuthors = cf.dimension(function (p) { return p.Author_name; });
+        var groupAuth = dimAuthors.group();
         //all the orgs.
         var orgs = groupByOrg.all();
         //assign orgs with a color.
@@ -313,6 +373,8 @@ window.onload = function () {
         mybarchartTzs.dimension(dimbytz).group(groupbytz).color("orange").width(30).setTitle("commits by Time Zone");
         mystackchartOrgs.dimension(dimByWeek).group(grouporgWeek).keyAccessor(keyaccessor).color(orgsColors).orderFunction(orderByValue).width(30).setTitle("contribution by company by week");
 
+
+
         var coordPieChart = { x: -9, y: 0, z: 0 };
         var coordBarChart = { x: 0, y: 0, z: 0 };
         var coordauthchart = { x: 0, y: -13, z: 0 };
@@ -328,6 +390,17 @@ window.onload = function () {
         var camera = document.querySelector("[camera]");
         camera.setAttribute("position", { x: 20, y: 0, z: 20 });
         camera.setAttribute("rotation", { x: -0.688, y: -4.240, z: 0 });
+
+        //clear all dimensions button..
+        $("#indexclear").on("click", function (ev) {
+            dimByOrg.filter(null);
+            dimByWeek.filter(null);
+            dimbytz.filter(null);
+            var charts = myDashboard.allCharts();
+            for (var i = 0 ; i < charts.length; i++) {
+                charts[i].render();
+            }
+        });
 
     }
 }

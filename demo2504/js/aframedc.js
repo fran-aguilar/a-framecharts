@@ -60,6 +60,7 @@
             })();
             odashboard.addPanel = function (panel) {
                 this.chartRegistry.register(panel);
+                panel._dashboard = this;
                 this.appendChild(panel);
                 var listOfCharts = panel.chartRegistry.list();
                 for (var i = 0; i < listOfCharts.length; i++) {
@@ -71,13 +72,29 @@
             odashboard.addChart = function (chart,coords) {
                 this.chartRegistry.register(chart);
                 this.appendChild(chart);
+                chart._dashboard = this;
                 if (coords) {
                     chart.setAttribute("position", coords);
                 }
                 chart.render();
                 return this;
             };
-
+            odashboard.allCharts = function () {
+                var aux_list = [];
+                var dashlist = this.chartRegistry.list();
+                for (var i = 0; i < dashlist.length; i++) {
+                    if (!dashlist[i].addChart) {
+                        //not a panel..
+                        aux_list.push(dashlist[i]);
+                    } else {
+                        var panelcharts = dashlist[i].chartRegistry.list();
+                        for (var j = 0 ; j < panelcharts.length ; j++) {
+                            aux_list.push(panelcharts[j]);
+                        }
+                    }
+                }
+                return aux_list;
+            };
             return odashboard;
         };
         var createcamera = function () {
@@ -146,7 +163,8 @@
             keyAccessor: function (keyHandler) {
                 this._keyHandler = keyHandler;
                 return this;
-            }
+            },
+            
         };
         aframedc.Panel = function () {
             var compName = "panel";
@@ -219,6 +237,7 @@
             oPanel.componentName = compName;
             oPanel.addChart = function (chart) {
                 this.chartRegistry.register(chart);
+                this._panel = this;
                 if (oPanel.hasLoaded && oPanel.sceneEl) {
                     this.appendChild(chart);
                     chart.render();
@@ -289,6 +308,41 @@
                 return this;
             }
             return obarChart;
+        };
+
+        aframedc.bubbleChart = function () {
+            var compName = "bubblechart";
+            var element = document.createElement('a-entity');
+            element.setAttribute(compName, {});
+            var obubbleChart = element;
+            obarChart = AFRAME.utils.extendDeep(obubbleChart, baseMixin);
+            //unique properties and methods
+            obubbleChart.componentName = compName;
+            obubbleChart.width = function (newradius) {
+                this.setAttribute(this.componentName, "width", newradius);
+                return this;
+            };
+            obubbleChart.height = function (newradius) {
+                this.setAttribute(this.componentName, "height", newradius);
+                return this;
+            };
+            obubbleChart.heightAccessor = function (heightfunc) {
+                this._heightAccesor = heightfunc;
+                return this;
+            }
+            obubbleChart.radiusAccessor = function (rfunc) {
+                this._radiusAccesor = rfunc;
+                return this;
+            }
+            obubbleChart.arrayAccessor = function (arrfunc) {
+                this._arrAccesor = arrfunc;
+                return this;
+            }
+            obubbleChart.zAxis = function (newzaxis) {
+                this._zAxis = newzaxis;
+                return this;
+            }
+            return obubbleChart;
         };
 
         aframedc.smoothCurveChart = function () {

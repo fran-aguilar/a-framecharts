@@ -117,6 +117,40 @@
             el._partData = barPart;
             //getting max.
             eElem.appendChild(el);
+            var myFunc = function (chart, element) {
+
+                if (chart.el._dimension) {
+                    var myDim = chart.el._dimension;
+                    myDim.filterAll(null);
+                    myDim = myDim.filter(element.data.key);
+                    //llamada a redibujado de todo..
+                    var dashboard;
+                    if (chart.el._dashboard)
+                        dashboard = chart.el._dashboard;
+                    else if (chart.el._panel)
+                        dashboard = chart.el._panel._dashboard;
+
+                    if (dashboard) {
+                        //getting all charts
+                        var charts = dashboard.allCharts();
+                        for (var ch = 0 ; ch < charts.length; ch++) {
+                            if (charts[ch] !== chart.el && charts[ch]._group) {
+                                charts[ch].emit("data-loaded");
+                            }
+                        }
+
+                    } else {
+                        var childs = chart.el.parentElement.children;
+                        for (var ch = 0 ; ch < childs.length ; ch++) {
+                            if (childs[ch] !== chart.el && childs[ch]._group) {
+                                childs[ch].emit("data-loaded");
+                            }
+                        }
+                    }
+                }
+            };
+            var myBindFunc = myFunc.bind(null, this, el._partData);
+            el.addEventListener("click", myBindFunc);
         }
         this.addEvents();
         var entLabels = this.addYLabels();
