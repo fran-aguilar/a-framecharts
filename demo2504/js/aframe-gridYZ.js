@@ -14,6 +14,7 @@ AFRAME.registerComponent("aframe-gridyz", {
             linewidth: 1
         });
 
+
         var grids = new THREE.Object3D();
         
         var stepY = data.depth / data.zsteps;
