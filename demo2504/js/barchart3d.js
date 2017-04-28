@@ -3,6 +3,7 @@
         gridson: { default: true },
         xsteps: { default: 5 },
         ysteps: { default: 5 },
+        zsteps: { default: 5 },
         width: { default: 10 },
         height: { default: 10 },
         depth: { default: 0.5 },
@@ -44,6 +45,7 @@
         var componentData = this.data;
         if ((!eElem._data || eElem._data.length === 0) &&
            !eElem._group) return;
+        if (!eElem._zAxis) return;
         var __calculateY = function (initialY, height) {
             var returnedY = height / 2 + initialY;
             return returnedY;
@@ -58,37 +60,35 @@
         }
 
         BAR_WIDTH = componentData.width / _data.length;;
-        BAR_DEPTH = componentData.depth;
+        BAR_DEPTH = componentData.depth / eElem._zAxis.length;
         MAX_HEIGHT = componentData.height;
-        MAX_VALUE =eElem._maxfunc( eElem._group.order(eElem._maxfunc).top(1)[0].value );
+        //using value and height accessor to retrieve max's
+        var arrays = _data.map(function (p) {
+            var myp = p;
+            return eElem._arrAccesor(p).map(function (o) {
+                return eElem._heightAccesor(o, myp);
+            });
+        });
+        var MAX_VALUE = Math.max.apply(null, ([].concat.apply([], arrays)));
         var entityEl = document.createElement('a-entity');
         var yMaxPoint = 0;
 
-        var relativeX, relativeY, relativeZ;
+        var relativeX, relativeY;
         relativeX = BAR_WIDTH / 2;
         relativeY = 0;
-        relativeZ = componentData.depth / 2;
 
         for (var i = 0; i < _data.length; i++) {
-            var sortedValues = _data[i].value.slice();
-            sortedValues.sort(function (a, b) {
-                if (a.value < b.value) {
-                    return 1;
-                }
-                if (a.value > b.value) {
-                    return -1;
-                }
-                // a must be equal to b
-                return 0;
-            });
-            for (var j = 0 ; j < sortedValues.length; j++) {
+            var dataValue = _data[i].value;
+            for (var j = 0 ; j < dataValue.length; j++) {
                 //we need to scale every item.
-                var myHeight =( sortedValues[j].value / MAX_VALUE) * MAX_HEIGHT;
-
+               
+                var myHeight = (eElem._heightAccesor(dataValue[j], dataValue) / MAX_VALUE) * MAX_HEIGHT;
                 var myYPosition = __calculateY(relativeY, myHeight);
                 var el = document.createElement('a-box');
-                var actualColor = eElem._colors.find(function(a) { return a.key === sortedValues[j].key}).value;
-                var elPos = { x: relativeX, y: myYPosition, z: 0 };
+                var actualColor = eElem._colors.find(function (a) { return a.key === dataValue[j].key }).value;
+                var index = eElem._zAxis.findIndex(function(a) { return a.key === dataValue[j].key});
+                var zpos = -(BAR_DEPTH) * (index + 0.5);
+                var elPos = { x: relativeX, y: myYPosition, z: zpos };
 
                 el.setAttribute('width', BAR_WIDTH);
                 el.setAttribute('height', myHeight);
@@ -99,19 +99,19 @@
 
                 var valuePart = _data[i].value;
                 if (eElem._valueHandler)
-                    valuePart = eElem._valueHandler(_data[i]);
+                    valuePart = eElem._valueHandler(dataValue[j], dataValue);
                 var keyPart = _data[i].key;
                 if (eElem._keyHandler) {
                     keyPart = eElem._keyHandler(_data[i]);
                 }
                 //storing parts info..
                 var barPart = {
-                    name: "key:" + keyPart + " org:" + sortedValues[j].key + " value: " + sortedValues[j].value,
+                    name: "key:" + keyPart + " value:" + valuePart,
                     data: {
                         key: _data[i].key,
-                        value: valuePart
+                        value: _data[i].value
                     },
-                    position: { x: elPos.x, y: MAX_HEIGHT + 0.25, z: elPos.z + relativeZ },
+                    position: { x: elPos.x, y: MAX_HEIGHT + 0.25, z: elPos.z  },
                     origin_color: actualColor
                 };
                 el._partData = barPart;
@@ -151,19 +151,19 @@
                 };
                 var myBindFunc = myFunc.bind(null, this, el._partData);
                 el.addEventListener("click", myBindFunc);
-                relativeY = relativeY + myHeight;
             }
-            relativeY = 0;
             relativeX += BAR_WIDTH;
 
         }
         this.addEvents();
-        if (eElem._colors) {
-            this.addleyenda();
-        }
+    
         var entLabels = this.addYLabels();
         for (var lb = 0 ; lb < entLabels.length; lb++) {
             eElem.appendChild(entLabels[lb]);
+        }
+        var zlabels = this.addZLabels();
+        for (var lb = 0 ; lb < zlabels.length; lb++) {
+            eElem.appendChild(zlabels[lb]);
         }
         if (componentData.gridson) {
             this.addGrid();
@@ -172,7 +172,7 @@
             this.addTitle();
         }
     },
-    addGrid: function (entityEl) {
+    addGrid: function () {
         var gridEntity = document.createElement('a-entity');
         gridEntity.setAttribute('aframe-grid', {
             height: this.data.height,
@@ -180,8 +180,27 @@
             ysteps: this.data.ysteps,
             xsteps: this.data.xsteps
         });
-        gridEntity.setAttribute("position", { x: 0, y: 0, z: -this.data.depth / 2 });
+        gridEntity.setAttribute("position", { x: 0, y: 0, z: -this.data.depth });
         this.el.appendChild(gridEntity);
+
+        var gridEntityZY = document.createElement('a-entity');
+        gridEntityZY.setAttribute('aframe-gridyz', {
+            height: this.data.height,
+            depth: this.data.depth,
+            ysteps: this.data.ysteps,
+            zsteps: this.el._zAxis.length
+        });
+
+
+        var gridEntityXZ = document.createElement('a-entity');
+        gridEntityXZ.setAttribute('aframe-gridxz', {
+            width: this.data.width,
+            depth: this.data.depth,
+            xsteps: this.data.xsteps,
+            zsteps: this.el._zAxis.length
+        });
+        this.el.appendChild(gridEntityZY);
+        this.el.appendChild(gridEntityXZ);
     },
     addTitle: function () {
         var titleEntity = document.createElement("a-entity");
@@ -278,7 +297,7 @@
             });
             //texto.setAttribute('geometry', { primitive: 'plane', width: 'auto', height: 'auto' });
             // Positions the text and adds it to the THREEDC.scene
-            var labelpos = { x: xPos, y: yPos, z: -component.data.depth / 2 };
+            var labelpos = { x: xPos, y: yPos, z: -component.data.depth  };
             texto.setAttribute('position', labelpos);
             return texto;
         }
@@ -289,8 +308,14 @@
         } else {
             _data = this.el._group.top(Infinity);
         }
-
-        topYValue = eElem._maxfunc(eElem._group.order(eElem._maxfunc).top(1)[0].value);
+        //using value and height accessor to retrieve max's
+        var arrays = _data.map(function (p) {
+            var myp = p;
+            return eElem._arrAccesor(p).map(function (o) {
+                return eElem._heightAccesor(o, myp);
+            });
+        });
+        topYValue = Math.max.apply(null, ([].concat.apply([], arrays)));
         numberOfValues = _data.length;
         //Y AXIS
         //var numerOfYLabels=Math.round(_chart._height/20);
@@ -303,40 +328,38 @@
 
         return labels;
     },
-    addleyenda: function () {
-        var leyendaEntity = document.createElement("a-entity");
-        leyendaEntity.id = "barchart3dleyend";
-        var topValue= this.el._group.top(1)[0];
-        var xPos = this.data.width +0.25 +1;
-        var ystep = this.data.height -0.25;
-        for (var i = 0; i < topValue.value.length; i++) {
-            var actualColor = this.el._colors.find(function (a) { return a.key === topValue.value[i].key }).value;
-            var colorbox = document.createElement("a-box");
-            colorbox.setAttribute("color", actualColor);
-            colorbox.setAttribute("width", 0.5);
-            colorbox.setAttribute("height", 0.5);
-            colorbox.setAttribute("depth", 0.5);
-            colorbox.setAttribute('position', { x: xPos, y: ystep, z: 0 });
+    addZLabels: function () {
+        if (!this.el._zAxis) return;
+        var getZLabel = function (component, step, labelkv) {
             var curveSeg = 3;
             var texto = document.createElement("a-entity");
             TEXT_WIDTH = 6;
-            var txt = topValue.value[i].key;
+            //FIXME: depende del tamaño de letra...
+            var xPos = -1 * ((TEXT_WIDTH / 2) + 0.7);
+            //var yPos = BasicChart._coords.y + step +  0.36778332145402703 / 2;
+            var zPos = -step;
             texto.setAttribute("text", {
-                color: "#000000",
+                color: labelkv.value,
                 side: "double",
-                value: txt,
+                value: labelkv.key,
                 width: TEXT_WIDTH,
                 wrapCount: 30,
-                align: "left"
+                align: "right"
             });
             //texto.setAttribute('geometry', { primitive: 'plane', width: 'auto', height: 'auto' });
             // Positions the text and adds it to the THREEDC.scene
-            texto.setAttribute('position', { x: xPos + 1 + TEXT_WIDTH / 2, y: ystep, z: 0 });
-            leyendaEntity.appendChild(texto);
-            leyendaEntity.appendChild(colorbox);
-            ystep -= 0.62;
+            var labelpos = { x: xPos, y: 0, z: zPos };
+            texto.setAttribute('position', labelpos);
+            return texto;
         }
-        this.el.appendChild(leyendaEntity);
+
+        var stepZ = this.data.depth / this.el._zAxis.length;
+        var labels = [];
+        for (var i = 0; i < this.el._zAxis.length; i++) {
+            labels.push(getZLabel(this, i * stepZ + stepZ / 2, this.el._zAxis[i]));
+        };
+
+        return labels;
     },
     remove: function () {
         while (this.el.firstChild) {

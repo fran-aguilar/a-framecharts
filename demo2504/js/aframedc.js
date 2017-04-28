@@ -283,8 +283,8 @@
             return obarChart;
         };
 
-        aframedc.barChart3d = function () {
-            var compName = "barchart3d";
+        aframedc.barChartstack = function () {
+            var compName = "barchartstack";
             var element = document.createElement('a-entity');
             element.setAttribute(compName, {});
             var obarChart = element;
@@ -344,7 +344,42 @@
             }
             return obubbleChart;
         };
+        aframedc.barChart3d = function () {
+            var compName = "barchart3d";
+            var element = document.createElement('a-entity');
+            element.setAttribute(compName, {});
+            var obarChart = element;
+            obarChart = AFRAME.utils.extendDeep(obarChart, baseMixin);
+            //unique properties and methods
+            obarChart.componentName = compName;
+            obarChart.width = function (newradius) {
+                this.setAttribute(this.componentName, "width", newradius);
+                return this;
+            };
+            obarChart.height = function (newradius) {
+                this.setAttribute(this.componentName, "height", newradius);
+                return this;
+            };
+            obarChart.color = function (newcolorDict) {
+                this._colors = newcolorDict;
+                return this;
+            }
+            obarChart.heightAccessor = function (heightfunc) {
+                this._heightAccesor = heightfunc;
+                return this;
+            }
+            obarChart.arrayAccessor = function (arrfunc) {
+                this._arrAccesor = arrfunc;
+                return this;
+            }
+            obarChart.zAxis = function (newcolorDict) {
+                this._zAxis = newcolorDict;
+                return this;
+            }
+            return obarChart;
+        };
 
+        
         aframedc.smoothCurveChart = function () {
             var compName = "smoothcurvechart";
             var element = document.createElement('a-entity');

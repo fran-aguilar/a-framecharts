@@ -30,7 +30,7 @@ window.onload = function () {
         var mybarchart = aframedc.barChart();
         var mybarchartaut = aframedc.barChart();
         var mybarchartTzs = aframedc.barChart();
-        var mystackchartOrgs = aframedc.barChart3d();
+        var mystackchartOrgs = aframedc.barChartstack();
         // Common
         var keysObj = Object.keys(json_data[0]);
         window.parsed_data = [];

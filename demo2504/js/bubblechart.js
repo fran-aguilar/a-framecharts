@@ -139,7 +139,7 @@
             relativeX += xStep;
         }
         this.addEvents();
-        var entLabels = this.addYLabels(MAX_RADIUS);
+        var entLabels = this.addYLabels();
         for (var lb = 0 ; lb < entLabels.length; lb++) {
             eElem.appendChild(entLabels[lb]);
         }
