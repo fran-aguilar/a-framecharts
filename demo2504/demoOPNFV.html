@@ -24,7 +24,15 @@
 <body>
 
     <div id="myscene">
+        <a-scene>
+            <a-assets>
 
+                <img id="city" src="img/fondo.jpg" />
+            </a-assets>
+            <!-- 360-degree image. -->
+            <a-sky id="image-360" src="#city"></a-sky>
+            <a-entity camera look-controls wasd-controls position="0 6 0" mouse-cursor></a-entity>
+        </a-scene>
     </div>
     <a href="index.html" style="position:absolute;top:30px;left:30px;z-index:2;cursor:pointer"> Return to Index </a>
     <a href="#" id="indexclear" style="position:absolute;top:52px;left:30px;z-index:2;cursor:pointer"> clear indexes </a>

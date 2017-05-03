@@ -1,0 +1,53 @@
+﻿<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js" integrity="sha256-cIcPwh2GcosI6bCl+ZAZt2j0Sk1QfgQ1ejEpjYOfa8g=" crossorigin="anonymous"></script>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
+    <script src="js/aframe-grid.js"></script>
+    <script src="js/aframe-gridyz.js"></script>
+    <script src="js/aframe-gridxz.js"></script>
+    <script src="js/piechart.js"></script>
+    <script src="js/barchart.js"></script>
+    <script src="js/barchart3d.js"></script>
+    <script src="js/barchartstack.js"></script>
+    <script src="js/bubblechart.js"></script>
+    <script src="js/title.js"></script>
+    <script src="js/smoothcurvechart.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/aframedc.js"></script>
+    <script src="js/demoOPNFVv2.js"></script>
+    <title>demo with OPNFV data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="myscene">
+        <a-scene>
+            <a-assets>
+                <a-mixin id="sph" geometry="primitive:sphere"></a-mixin>
+                <a-mixin id="transparente" material="transparent:true;opacity:0.4"></a-mixin>
+                <img id="city" src="img/fondo.jpg" />
+            </a-assets>
+            <!-- 360-degree image. -->
+            <a-sky id="image-360" src="#city"></a-sky>
+            <a-entity camera look-controls wasd-controls position="0 6 0" mouse-cursor></a-entity>
+            <a-entity id="indexcleartext" 
+                      position="-5 -14 0" 
+                      text="value:CLEAR INDEXES;align:left;color:white;width:6;wrapCount:15" 
+               
+                      rotation="-90 90 -90"></a-entity>
+            <!--geometry="primitive:plane;width:auto;height:auto"
+material="color:blue"-->
+
+        </a-scene>
+    </div>
+    <a href="index.html" style="position:absolute;top:30px;left:30px;z-index:2;cursor:pointer"> Return to Index </a>
+    <a href="#" id="indexclear" style="position:absolute;top:52px;left:30px;z-index:2;cursor:pointer"> clear indexes </a>
+</body>
+</html>

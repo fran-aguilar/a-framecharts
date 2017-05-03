@@ -22,9 +22,9 @@ window.onload = function () {
         init(json_data);
     });
     var init = function (json_data) {
-        var scenediv = document.getElementById("myscene");
+        var scene  = document.querySelector("a-scene");
         // 1
-        myDashboard = aframedc.dashboard(scenediv);
+        myDashboard = aframedc.addDashBoard(scene);
         // 2
         var mypiechart = aframedc.pieChart();
         var mybarchart = aframedc.barChart();
