@@ -551,6 +551,15 @@ window.onload = function () {
             camera.setAttribute("position", position);
             camera.setAttribute("rotation", rotation);
         });
+        var currentFilters = {
+        };
+        myDashboard.addEventListener("filtered", function (ev) {
+            //currentFilters
+            console.log(ev.target);
+            console.log(ev.detail);
+
+
+        });
     }
 }
 

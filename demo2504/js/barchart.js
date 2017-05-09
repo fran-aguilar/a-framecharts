@@ -36,6 +36,12 @@
             } else {
                 //updating single elements. 
                 var diff = AFRAME.utils.diff(oldData, this.data);
+                if (diff.title !== "") {
+                    var titleEntity = this.el.querySelector("[title]");
+                    if (titleEntity) {
+                        titleEntity.setAttribute("title", "caption", diff.title);
+                    }
+                }
             }
         }
     },
@@ -147,6 +153,8 @@
                             }
                         }
                     }
+                    //exp.
+                    chart.el.emit("filtered", { element: element });
                 }
             };
             var myBindFunc = myFunc.bind(null, this, el._partData);
