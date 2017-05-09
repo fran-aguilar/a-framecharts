@@ -37,6 +37,12 @@
             } else {
                 //updating single elements. 
                 var diff = AFRAME.utils.diff(oldData, this.data);
+                if (diff.title !== "") {
+                    var titleEntity = this.el.querySelector("[title]");
+                    if (titleEntity) {
+                        titleEntity.setAttribute("title", "caption", diff.title);
+                    }
+                }
             }
         }
     }, initChart: function () {
@@ -132,6 +138,44 @@
                         origin_color: actualColor
                     };
                     el._partData = barPart;
+                    var myFunc = function (chart, element) {
+
+                        if (chart.el._dimension) {
+                            var myDim = chart.el._dimension;
+                            myDim.filterAll(null);
+                            myDim = myDim.filter(element.data.key);
+                            //llamada a redibujado de todo..
+                            var dashboard;
+                            if (chart.el._dashboard)
+                                dashboard = chart.el._dashboard;
+                            else if (chart.el._panel)
+                                dashboard = chart.el._panel._dashboard;
+
+                            if (dashboard) {
+                                //getting all charts
+                                var charts = dashboard.allCharts();
+                                for (var ch = 0 ; ch < charts.length; ch++) {
+                                    if (charts[ch] !== chart.el && charts[ch]._group) {
+                                        charts[ch].emit("data-loaded");
+                                    }
+                                }
+
+                            } else {
+                                var childs = chart.el.parentElement.children;
+                                for (var ch = 0 ; ch < childs.length ; ch++) {
+                                    if (childs[ch] !== chart.el && childs[ch]._group) {
+                                        childs[ch].emit("data-loaded");
+                                    }
+                                }
+                            }
+                        }
+                        //exp.
+                        chart.el.emit("filtered", { element: element });
+                    };
+                    var myBindFunc = myFunc.bind(null, this, el._partData);
+                    el.addEventListener("click", myBindFunc);
+                    //exp.
+                    //chart.el.emit("filtered", { element: element });
                 }
                 relativeZ =relativeZ- zStep;
             }
@@ -336,7 +380,7 @@
         },
         addTitle: function () {
             var titleEntity = document.createElement("a-entity");
-            titleEntity.setAttribute("title", { caption: this.data.title, width: Math.max(this.data.width / 2, 6) });
+            titleEntity.setAttribute("title", { caption: this.data.title, width: Math.max(this.data.width/2, 6) });
             titleEntity.setAttribute("position", { x: this.data.width / 2, y: this.data.height + 1.2, z: 0 });
             this.el.appendChild(titleEntity);
         },

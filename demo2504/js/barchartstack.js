@@ -36,6 +36,12 @@
             } else {
                 //updating single elements. 
                 var diff = AFRAME.utils.diff(oldData, this.data);
+                if (diff.title !== "") {
+                    var titleEntity = this.el.querySelector("[title]");
+                    if (titleEntity) {
+                        titleEntity.setAttribute("title", "caption", diff.title);
+                    }
+                }
             }
         }
     },
@@ -147,6 +153,8 @@
                                 }
                             }
                         }
+                        //exp.
+                        chart.el.emit("filtered", { element: element });
                     }
                 };
                 var myBindFunc = myFunc.bind(null, this, el._partData);
@@ -185,7 +193,7 @@
     },
     addTitle: function () {
         var titleEntity = document.createElement("a-entity");
-        titleEntity.setAttribute("title", { caption: this.data.title, width: this.data.width / 2 });
+        titleEntity.setAttribute("title", { caption: this.data.title, width: Math.max(this.data.width/2, 6) });
         titleEntity.setAttribute("position", { x: this.data.width/2, y: this.data.height + 1, z: 0 });
         this.el.appendChild(titleEntity);
     },

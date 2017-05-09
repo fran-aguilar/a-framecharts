@@ -532,7 +532,7 @@ window.onload = function () {
         //var text = document.querySelector("#indexcleartext");
         //text.addEventListener("click", clearallindex);
 
-        var mycheckpointB = document.querySelector("#checkpointB");
+        var mycheckpointB = document.querySelector("#checkpointb");
         mycheckpointB.addEventListener("click", function (ev) {
             //get the camera an set position and lookat attr.
             var camera = document.querySelector("[camera]");
@@ -542,7 +542,7 @@ window.onload = function () {
             camera.setAttribute("rotation", rotation);
         });
 
-        var mycheckpointA = document.querySelector("#checkpointA");
+        var mycheckpointA = document.querySelector("#checkpointa");
         mycheckpointA.addEventListener("click", function (ev) {
             //get the camera an set position and lookat attr.
             var camera = document.querySelector("[camera]");
@@ -551,14 +551,56 @@ window.onload = function () {
             camera.setAttribute("position", position);
             camera.setAttribute("rotation", rotation);
         });
-        var currentFilters = {
-        };
+        
+        var initText = "current filters are:";
+        var myCurrentfilterEntity = document.querySelector("#filterinfo");
+        var dimensions = [{ key: dimByOrg, text: "Organization" },
+                          { key: dimbyYandQ, text: "Time" }
+        ];
+        //array of entities filtered.
+        var currentfilters = [];
         myDashboard.addEventListener("filtered", function (ev) {
             //currentFilters
-            console.log(ev.target);
-            console.log(ev.detail);
+            //console.log(ev.target);
+            //console.log(ev.detail);
+            var keyPart = ev.detail.element.data.key;
+            if (ev.target._keyHandler) {
+                keyPart = ev.target._keyHandler(ev.detail.element.data);
+            }
+            var index = currentfilters.findIndex(function (d) { return d.key == ev.target._dimension; });
+            if (index === -1) {
+                currentfilters.push({ key: ev.target._dimension, value: keyPart });
+            } else {
+                currentfilters[index].value = keyPart;
+            }
+            var aux_text = initText;
+            for (var i = 0 ; i < currentfilters.length; i++) {
+                aux_text += " " +
+                 dimensions.find(function (d) { return d.key === currentfilters[i].key; }).text +
+                " " + currentfilters[i].value;
+            }
+            // showing actual filters.
+            myCurrentfilterEntity.setAttribute("text", "value", aux_text);
 
+            //showing filter on chart;
+            var charts = myDashboard.allCharts();
+            for (var j = 0 ; j < charts.length; j++) {
+                var text = charts[j].getAttribute(charts[j].componentName).title;
+                var ifiltertext = text.indexOf(":filter:") ;
+                var originalText = text.substring(0, ifiltertext !==-1 ? ifiltertext: text.length);
+                var index;
+                if (charts[j]._dimension ) {
+                    for (var f = 0 ; f < currentfilters.length; f++) {
+                        if (currentfilters[f].key !== charts[j]._dimension) {
+                            originalText += ":filter:" +
+                            dimensions.find(function (d) { return d.key === currentfilters[f].key; }).text +
+                            " " + currentfilters[f].value;
+                        }
+                    }
 
+                    charts[j].setTitle(originalText);
+                }
+            }
         });
     }
 }
