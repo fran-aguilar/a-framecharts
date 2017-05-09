@@ -163,9 +163,10 @@
         this.el.innerHTML = "";
 
     },
+
     addTitle: function () {
         var titleEntity = document.createElement("a-entity");
-        titleEntity.setAttribute("title", { caption: this.data.title });
+        titleEntity.setAttribute("title", { caption: this.data.title, width: Math.max(this.data.radius,6) });
         titleEntity.setAttribute("position", { x: this.data.radius, y: (this.data.radius * 2) + 1, z: this.data.depth / 2 });
         this.el.appendChild(titleEntity);
     },

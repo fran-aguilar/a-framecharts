@@ -185,8 +185,8 @@
     },
     addTitle: function () {
         var titleEntity = document.createElement("a-entity");
-        titleEntity.setAttribute("title", { caption: this.data.title });
-        titleEntity.setAttribute("position", { x: 0, y: this.data.height + 1, z: 0 });
+        titleEntity.setAttribute("title", { caption: this.data.title, width: this.data.width / 2 });
+        titleEntity.setAttribute("position", { x: this.data.width/2, y: this.data.height + 1, z: 0 });
         this.el.appendChild(titleEntity);
     },
     addEvents: function () {

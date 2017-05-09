@@ -86,7 +86,8 @@
                 var myYPosition = __calculateY(relativeY, myHeight);
                 var el = document.createElement('a-box');
                 var actualColor = eElem._colors.find(function (a) { return a.key === dataValue[j].key }).value;
-                var index = eElem._zAxis.findIndex(function(a) { return a.key === dataValue[j].key});
+                var index = eElem._zAxis.findIndex(function (a) { return a.key === dataValue[j].key });
+                //-bardepth *i - bardepth/2
                 var zpos = -(BAR_DEPTH) * (index + 0.5);
                 var elPos = { x: relativeX, y: myYPosition, z: zpos };
 
@@ -204,8 +205,8 @@
     },
     addTitle: function () {
         var titleEntity = document.createElement("a-entity");
-        titleEntity.setAttribute("title", { caption: this.data.title });
-        titleEntity.setAttribute("position", { x: 0, y: this.data.height + 1, z: 0 });
+        titleEntity.setAttribute("title", { caption: this.data.title, width: this.data.width / 2 });
+        titleEntity.setAttribute("position", { x: this.data.width / 2, y: this.data.height + 1, z: 0 });
         this.el.appendChild(titleEntity);
     },
     addEvents: function () {
@@ -336,10 +337,10 @@
             TEXT_WIDTH = 6;
             //FIXME: depende del tamaño de letra...
             var xPos = -1 * ((TEXT_WIDTH / 2) + 0.7);
-            //var yPos = BasicChart._coords.y + step +  0.36778332145402703 / 2;
             var zPos = -step;
+            var actualColor = component.el._colors.find(function (d) { return d.key === labelkv.key; }).value;
             texto.setAttribute("text", {
-                color: labelkv.value,
+                color: actualColor,
                 side: "double",
                 value: labelkv.key,
                 width: TEXT_WIDTH,

@@ -1,7 +1,7 @@
 ﻿AFRAME.registerComponent('title', {
     schema: {
         caption: { default: "", type: "string" },
-        width: { default: 6, type: "number" },
+        width: { default: 7, type: "number" },
     },
     update: function (oldData) {
         var data = this.data;

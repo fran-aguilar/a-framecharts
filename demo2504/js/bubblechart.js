@@ -150,6 +150,9 @@
         if (componentData.gridson) {
             this.addGrid();
         }
+        if (componentData.title !== "") {
+            this.addTitle();
+        }
     },
     addEvents : function () {
         var addEvent = function (basicChart, partElement) {
@@ -231,7 +234,7 @@
             height: this.data.height,
             depth: this.data.depth,
             ysteps: this.data.ysteps,
-            zsteps: this.data.zsteps
+            zsteps: this.el._zAxis.length
         });
 
 
@@ -240,7 +243,7 @@
             width: this.data.width,
             depth: this.data.depth,
             xsteps: this.data.xsteps,
-            zsteps: this.data.zsteps
+            zsteps: this.el._zAxis.length
         });
         this.el.appendChild(gridEntityZY);
         this.el.appendChild(gridEntityXZ);
@@ -323,20 +326,20 @@
                 return texto;
             }
 
-            var stepZ = this.data.depth / this.data.zsteps;
+            var stepZ = this.data.depth / this.el._zAxis.length;
             var labels = [];
-            for (var i = 0; i < this.data.zsteps; i++) {
+            for (var i = 0; i < this.el._zAxis.length; i++) {
                 labels.push(getZLabel(this, i * stepZ + stepZ/2, this.el._zAxis[i]));
             };
 
             return labels;
         },
-    addTitle: function () {
-        var titleEntity = document.createElement("a-entity");
-        titleEntity.setAttribute("title", { caption: this.data.title });
-        titleEntity.setAttribute("position", { x: 0, y: this.data.height + 1, z: 0 });
-        this.el.appendChild(titleEntity);
-    },
+        addTitle: function () {
+            var titleEntity = document.createElement("a-entity");
+            titleEntity.setAttribute("title", { caption: this.data.title, width: Math.max(this.data.width / 2, 6) });
+            titleEntity.setAttribute("position", { x: this.data.width / 2, y: this.data.height + 1.2, z: 0 });
+            this.el.appendChild(titleEntity);
+        },
     remove: function () {
         while (this.el.firstChild) {
             this.el.removeChild(this.el.firstChild);
