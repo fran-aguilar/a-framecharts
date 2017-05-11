@@ -477,7 +477,7 @@ window.onload = function () {
             return "org: " + p.key + " commits: " + p.value;
         };
         angle = Math.PI;
-        mybarchart.dimension(dimbyYandQ).group(groupbyYandQ).keyAccessor(keyaccessor).width(15).setTitle("commits per week");
+        mybarchart.dimension(dimbyYandQ).group(groupbyYandQ).keyAccessor(keyaccessor).width(15).setTitle("commits on time");
         mybarchart.setAttribute("rotation", { x: 0, y: -180, z: 0 });
 
 
@@ -527,8 +527,11 @@ window.onload = function () {
             for (var i = 0 ; i < charts.length; i++) {
                 charts[i].render();
             }
+            //clean current filters.
+            currentfilters = [];
+            myCurrentfilterEntity.setAttribute("text", "value", initText);
         };
-        //$("#indexclear").on("click", clearallindex);
+        $("#indexclear").on("click", clearallindex);
         //var text = document.querySelector("#indexcleartext");
         //text.addEventListener("click", clearallindex);
 
@@ -601,6 +604,15 @@ window.onload = function () {
                     charts[j].setTitle(originalText);
                 }
             }
+        });
+        var groundentity = document.querySelector("#groundentity");
+        var toggle = document.querySelector("#toggleground")
+            toggle.addEventListener("click", function (ev) {
+            var visibility = groundentity.getAttribute("visible");
+            if (visibility === false) visibility = true;
+            else visibility = false;
+            groundentity.setAttribute("visible", visibility);
+
         });
     }
 }
